@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_menu">
+
+    <fragment
+        android:id="@+id/navigation_menu"
+        android:name="com.cyberpanterra.book.Fragments.MenuFragment"
+        android:label="@string/title_menu"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_dashboard"
+            app:destination="@id/navigation_saved" />
+        <action
+            android:id="@+id/action_navigation_menu_to_navigation_open_data"
+            app:destination="@id/navigation_open_data" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_saved"
+        android:name="com.cyberpanterra.book.Fragments.FavouriteFragment"
+        android:label="@string/title_saved"
+        tools:layout="@layout/fragment_favourite" >
+        <action
+            android:id="@+id/action_navigation_favourite_to_navigation_home"
+            app:destination="@id/navigation_menu" />
+        <action
+            android:id="@+id/action_navigation_saved_to_navigation_open_data"
+            app:destination="@id/navigation_open_data" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_open_data"
+        android:name="com.cyberpanterra.book.Fragments.OpenDataFragment"
+        android:label="@string/title_open_data"
+        tools:layout="@layout/fragment_open_data" >
+        <action
+            android:id="@+id/action_navigation_favourite_to_navigation_home"
+            app:destination="@id/navigation_menu" />
+        <action
+            android:id="@+id/action_navigation_open_data_to_navigation_saved"
+            app:destination="@id/navigation_saved" />
+    </fragment>
+
+</navigation>
