@@ -1,6 +1,6 @@
 package com.cyberpanterra.book.Adapters;
 
-/* 
+/*
     The creator of the ChaptersDataAdapter class is Asadjon Xusanjonov
     Created on 15:35, 23.03.2022
 */
@@ -20,26 +20,30 @@ import com.cyberpanterra.book.Datas.Chapter;
 import com.cyberpanterra.book.Datas.Theme;
 import com.cyberpanterra.book.Interactions.StaticClass;
 import com.cyberpanterra.book.Interfaces.OnClickListener;
+import com.cyberpanterra.book.Interfaces.RemoveOnClickListener;
 import com.cyberpanterra.book.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ChaptersDataAdapter extends RecyclerView.Adapter<ChaptersDataAdapter.MyViewHolder> implements Filterable {
+public class ChaptersDataAdapter extends RecyclerView.Adapter<ChaptersDataAdapter.MyViewHolder> {
 
     private List<Chapter> mChapters;
-    private List<Chapter> mFullChapters;
+    private final List<Chapter> mFullChapters;
     private final OnClickListener<Theme> mOnClickListener;
-    private final OnClickListener<Theme> mThemeOnClickListener;
+    private final RemoveOnClickListener<Theme, Boolean> mRemoveOnClickListener;
     private String mSearchedText = "";
+    private final boolean mIsFavourites;
+    private Boolean mTurnOnDelete = false;
 
-    public ChaptersDataAdapter(List<Chapter> chapters, OnClickListener<Theme> listener, OnClickListener<Theme> themeListener) {
+    public ChaptersDataAdapter(boolean isFavourites, List<Chapter> chapters, OnClickListener<Theme> listener, RemoveOnClickListener<Theme, Boolean> removeListener) {
+        mIsFavourites = isFavourites;
         mChapters = chapters;
         mFullChapters = new ArrayList<>();
         if(mChapters != null) mFullChapters.addAll(mChapters);
         mOnClickListener = listener;
-        mThemeOnClickListener = themeListener;
+        mRemoveOnClickListener = removeListener;
 
         setHasStableIds(false);
     }
@@ -51,61 +55,46 @@ public class ChaptersDataAdapter extends RecyclerView.Adapter<ChaptersDataAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.bindDataView(mChapters.get(position));
-    }
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) { holder.bindDataView(position); }
 
     @Override
-    public void onViewRecycled(@NonNull MyViewHolder holder) {
-        super.onViewRecycled(holder);
-    }
+    public void onViewRecycled(@NonNull MyViewHolder holder) { super.onViewRecycled(holder); }
 
     @Override
     public int getItemCount() { return mChapters.size(); }
 
-    public void setChapters(List<Chapter> chapters) {
-        mChapters = chapters;
-        mFullChapters = new ArrayList<>(mChapters);
+    public List<Chapter> getChapters() { return mChapters; }
+
+    public Boolean getTurnOnDelete() { return mTurnOnDelete; }
+
+    public void setTurnOnDelete(Boolean turnOnDelete) { mTurnOnDelete = turnOnDelete; notifyDataSetChanged(); }
+
+    public void filter(String searchText){
+        mSearchedText = searchText.toUpperCase().trim();
+
+        List<Chapter> filteredList = new ArrayList<>();
+
+        if (mSearchedText == null || mSearchedText.isEmpty()) filteredList.addAll(mFullChapters);
+        else StaticClass.forEach(mFullChapters, data -> {
+            if (data.isSearchResult(mSearchedText) || data.getName().toUpperCase().contains(mSearchedText) || data.getValue().toUpperCase().contains(mSearchedText))
+                filteredList.add(data);});
+
+        mChapters = filteredList;
         notifyDataSetChanged();
     }
 
-    @Override
-    public Filter getFilter() { return exampleFilter; }
-
-    private final Filter exampleFilter =  new Filter() {
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            mSearchedText = constraint.toString().toUpperCase().trim();
-
-            List<Chapter> filteredList = new ArrayList<>();
-
-            if (mSearchedText == null || mSearchedText.length() == 0) {
-                filteredList.addAll(mFullChapters);
-                for (Chapter data : mFullChapters) data.resetData();
-            }
-            else for (Chapter data : mFullChapters)
-                    if (data.isSearchResult(mSearchedText) || data.getName().toUpperCase().contains(mSearchedText) || data.getValue().toUpperCase().contains(mSearchedText))
-                        filteredList.add(data);
-
-            FilterResults results = new FilterResults();
-            results.values = filteredList;
-            return results;
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            if(results.values != null) {
-                mChapters = (List<Chapter>) results.values;
-                notifyDataSetChanged();
-            }
-        }
-    };
+    public final void removeChapter(Chapter removedChapter){
+        notifyItemRemoved(mChapters.indexOf(removedChapter));
+        mChapters.remove(removedChapter);
+        mFullChapters.remove(removedChapter);
+    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
         private final View chapterView;
         private final View separatorView;
         private final TextView nameText;
         private final TextView valueText;
+        private final ImageView favouriteView;
         private final RecyclerView themesRecyclerView;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -114,13 +103,15 @@ public class ChaptersDataAdapter extends RecyclerView.Adapter<ChaptersDataAdapte
             separatorView = itemView.findViewById(R.id.separatorView);
             nameText = itemView.findViewById(R.id.chapterName);
             valueText = itemView.findViewById(R.id.chapterValue);
+            favouriteView = itemView.findViewById(R.id.favouriteView);
             themesRecyclerView = itemView.findViewById(R.id.themes);
         }
 
-        public void bindDataView(Chapter chapter){
-            if(chapter.getSerializedThemes().size() != 0) {
-                themesRecyclerView.setAdapter(new ThemesDataAdapter(chapter.getSerializedThemes(), mThemeOnClickListener, mSearchedText));
-            } else {
+        public void bindDataView(int position){
+            Chapter chapter = mChapters.get(position);
+            if(chapter.getSerializedThemes().size() != 0)
+                themesRecyclerView.setAdapter(new ThemesDataAdapter(ChaptersDataAdapter.this, mIsFavourites, new ArrayList<>(chapter.getSerializedThemes()), mOnClickListener, mRemoveOnClickListener, mSearchedText, mTurnOnDelete));
+            else {
                 themesRecyclerView.setVisibility(View.INVISIBLE);
                 themesRecyclerView.setAdapter(null);
             }
@@ -129,6 +120,16 @@ public class ChaptersDataAdapter extends RecyclerView.Adapter<ChaptersDataAdapte
             separatorView.setVisibility(chapter.getValue().equals("") ? View.GONE : View.VISIBLE);
             nameText.setText(chapter.getName());
             valueText.setText(chapter.getValue());
+
+            if(mIsFavourites) {
+                favouriteView.setVisibility(mTurnOnDelete ? View.VISIBLE : View.GONE);
+                favouriteView.setOnClickListener(view -> {
+                    notifyItemRemoved(mChapters.indexOf(chapter));
+                    mChapters.remove(chapter);
+                    mFullChapters.remove(chapter);
+                    mRemoveOnClickListener.OnClick(chapter.getFullThemes().get(0), true);
+                });
+            } else favouriteView.setVisibility(View.GONE);
 
             StaticClass.setHighLightedText(nameText, mSearchedText);
             StaticClass.setHighLightedText(valueText, mSearchedText);

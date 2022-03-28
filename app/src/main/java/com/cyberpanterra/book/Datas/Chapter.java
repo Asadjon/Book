@@ -5,10 +5,13 @@ package com.cyberpanterra.book.Datas;
     Created on 8:38, 23.03.2022
 */
 
+import com.cyberpanterra.book.Interactions.StaticClass;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,9 +19,8 @@ public class Chapter {
     private final int mId;
     private final String mName;
     private final String mValue;
-    private List<Theme> mSerializedThemes = new ArrayList<>();
+    private final List<Theme> mSerializedThemes = new ArrayList<>();
     private final List<Theme> mNonSerializedThemes = new ArrayList<>();
-    private final List<Theme> mSerializedFullThemes = new ArrayList<>();
     private final List<Theme> mFullThemes = new ArrayList<>();
 
     public Chapter(int id, String name, String value, List<Theme> themes) {
@@ -43,16 +45,14 @@ public class Chapter {
         mFullThemes.clear();
         mSerializedThemes.clear();
         mNonSerializedThemes.clear();
-        mSerializedFullThemes.clear();
 
-        for (Theme theme : themes) {
+        StaticClass.forEach(themes, theme -> {
             if (theme.isSerialized()) mSerializedThemes.add(theme);
             else mNonSerializedThemes.add(theme);
             theme.setChapter(this);
-        }
+        });
 
         mFullThemes.addAll(themes);
-        mSerializedFullThemes.addAll(mSerializedThemes);
         return this;
     }
 
@@ -71,14 +71,10 @@ public class Chapter {
         }
     }
 
-    public void resetData() { mSerializedThemes = new ArrayList<>(mSerializedFullThemes); }
-
     public boolean isSearchResult(String searchingText){
-        for (Theme data : mSerializedFullThemes)
-            if (data.getName().toUpperCase().contains(searchingText) || data.getIndex().toUpperCase().contains(searchingText))
-                return true;
-
-        return false;
+        return StaticClass.contains(mFullThemes, target ->
+                target.getName().toUpperCase().contains(searchingText) ||
+                        target.getIndex().toUpperCase().contains(searchingText));
     }
 
     @NotNull
@@ -96,7 +92,7 @@ public class Chapter {
 
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mName, mValue, mSerializedThemes, mNonSerializedThemes, mSerializedFullThemes, mFullThemes);
+        return Objects.hash(mId, mName, mValue, mSerializedThemes, mNonSerializedThemes, mFullThemes);
     }
 }
 

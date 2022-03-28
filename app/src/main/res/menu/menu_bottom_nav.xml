@@ -9,6 +9,6 @@
     <item
         android:id="@+id/navigation_saved"
         android:icon="@drawable/ic_baseline_turned_in_24_light"
-        android:title="@string/title_saved" />
+        android:title="@string/title_favourite" />
 
 </menu>

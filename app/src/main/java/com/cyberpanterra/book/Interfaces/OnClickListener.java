@@ -8,3 +8,4 @@ package com.cyberpanterra.book.Interfaces;
 public interface OnClickListener<T>{
     void OnClick(T value);
 }
+

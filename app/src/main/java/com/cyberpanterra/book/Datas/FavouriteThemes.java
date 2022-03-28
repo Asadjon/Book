@@ -51,6 +51,14 @@ public class FavouriteThemes {
             }
     }
 
+    public void removeChapter(Chapter favouriteChapter){
+        if (!database.getChapters().contains(favouriteChapter)) return;
+         database.getChapters().remove(database.getChapters().get(database.getChapters().indexOf(favouriteChapter)));
+
+        chapters.setValue(database.getChapters());
+        database.setChapterList(database.getChapters());
+    }
+
     public LiveData<List<Chapter>> getFavouriteChapters() { return chapters; }
 
     public boolean isContains(Theme theme){

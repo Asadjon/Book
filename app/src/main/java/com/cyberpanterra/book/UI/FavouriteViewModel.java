@@ -28,5 +28,7 @@ public class FavouriteViewModel extends ViewModel {
 
     public void removeFavourite(Theme theme) { favouriteRepository.removeTheme(theme); }
 
+    public void removeChapter(Chapter chapter) { favouriteRepository.removeChapter(chapter); }
+
     public boolean isContainsFavourite(Theme theme) { return favouriteRepository.isContains(theme); }
 }

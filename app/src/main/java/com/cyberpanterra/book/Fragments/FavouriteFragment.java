@@ -6,67 +6,100 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cyberpanterra.book.Adapters.ChaptersDataAdapter;
+import com.cyberpanterra.book.Datas.FavouriteDatabase;
 import com.cyberpanterra.book.Datas.FavouriteDatabaseController;
+import com.cyberpanterra.book.Datas.FavouriteRepository;
 import com.cyberpanterra.book.Datas.Theme;
 import com.cyberpanterra.book.Interactions.StaticClass;
 import com.cyberpanterra.book.Interfaces.IOnBackPressed;
 import com.cyberpanterra.book.R;
+import com.cyberpanterra.book.UI.FavouriteViewModel;
+import com.cyberpanterra.book.UI.FavouriteViewModelFactory;
 import com.cyberpanterra.book.UI.SharedViewModel;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public class FavouriteFragment extends Fragment implements IOnBackPressed {
+import java.util.ArrayList;
 
-    private SharedViewModel homeViewModel;
+public class FavouriteFragment extends Fragment implements IOnBackPressed{
+
+    private SharedViewModel mSharedViewModel;
+    private FavouriteViewModel mFavouriteViewModel;
     private ChaptersDataAdapter mAdapter;
     private SearchView mSearchView;
+    private TextView mEmptyText;
+    private RecyclerView mRecyclerView;
     private boolean mIsExpandSearchView = false;
 
-    public FavouriteFragment() { super(R.layout.fragment_home); }
+    public FavouriteFragment() { super(R.layout.fragment_favourite); }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setToolbar(view.findViewById(R.id.menuToolbar));
+        setHasOptionsMenu(true);
 
-        homeViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        mSharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        mFavouriteViewModel = new ViewModelProvider(requireActivity(), provideFavouriteViewModelFactory()).get(FavouriteViewModel.class);
 
-        RecyclerView recyclerView = view.findViewById(R.id.chapters);
-        mAdapter = new ChaptersDataAdapter(FavouriteDatabaseController.Companion.init(requireContext()).getChapters(), this::OnClick, this::OnClick);
-        recyclerView.setAdapter(mAdapter);
-        recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 0);
+        mRecyclerView = view.findViewById(R.id.recyclerView);
+        mAdapter = new ChaptersDataAdapter(true, new ArrayList<>(FavouriteDatabaseController.Companion.init(requireContext()).getChapters()), this::OnClick, this::RemoveOnClick);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 0);
+
+        mEmptyText = view.findViewById(R.id.emptyText);
+
+        favouriteEmpty();
+    }
+
+    private void favouriteEmpty(){
+        if(mAdapter.getChapters().isEmpty()){
+            mRecyclerView.setVisibility(View.GONE);
+            mEmptyText.setVisibility(View.VISIBLE);
+            mAdapter.setTurnOnDelete(false);
+        }else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyText.setVisibility(View.GONE);
+        }
     }
 
     public void OnClick(@NotNull Theme theme) {
         if(mIsExpandSearchView) StaticClass.setShowKeyboard(requireContext(), requireActivity().getCurrentFocus(), false);
 
-        homeViewModel.setData(theme);
+        mSharedViewModel.setData(theme);
         NavHostFragment.findNavController(this).navigate(R.id.action_navigation_saved_to_navigation_open_data);
     }
 
-    private void setToolbar(@NotNull Toolbar toolbar){
-        toolbar.inflateMenu(R.menu.menu_search);
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
+    public void RemoveOnClick(@NotNull Theme theme, Boolean isChapter) {
+        if(mIsExpandSearchView) StaticClass.setShowKeyboard(requireContext(), requireActivity().getCurrentFocus(), false);
 
-        if(activity != null) activity.setSupportActionBar(toolbar);
+        if(isChapter) mFavouriteViewModel.removeChapter(theme.getChapter());
+        else mFavouriteViewModel.removeFavourite(theme);
+
+        favouriteEmpty();
+    }
+
+    @NotNull
+    @Contract(" -> new")
+    private FavouriteViewModelFactory provideFavouriteViewModelFactory(){
+        return new FavouriteViewModelFactory(FavouriteRepository.getInstance(FavouriteDatabase.getInstance(requireContext()).getFavouriteThemes()));
     }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_search, menu);
+        inflater.inflate(R.menu.menu_favourite, menu);
 
         MenuItem menuItem_search = menu.findItem(R.id.action_search);
         menuItem_search.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
@@ -85,7 +118,8 @@ public class FavouriteFragment extends Fragment implements IOnBackPressed {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                mAdapter.getFilter().filter(newText);
+                mAdapter.filter(newText);
+                favouriteEmpty();
                 return false;
             }
         });
@@ -99,10 +133,16 @@ public class FavouriteFragment extends Fragment implements IOnBackPressed {
     }
 
     @Override
-    public boolean onBackPressed() {
-        if(mIsExpandSearchView)
-            mSearchView.onActionViewCollapsed();
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_delete && mAdapter.getItemCount() > 0) {
+            mAdapter.setTurnOnDelete(!mAdapter.getTurnOnDelete());
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
+    @Override
+    public boolean onBackPressed() {
+        if(mIsExpandSearchView) mSearchView.onActionViewCollapsed();
         return !mIsExpandSearchView;
     }
 }

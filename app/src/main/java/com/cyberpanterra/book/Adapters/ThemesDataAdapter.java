@@ -8,6 +8,7 @@ package com.cyberpanterra.book.Adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,24 +18,36 @@ import com.cyberpanterra.book.Datas.Chapter;
 import com.cyberpanterra.book.Datas.Theme;
 import com.cyberpanterra.book.Interactions.StaticClass;
 import com.cyberpanterra.book.Interfaces.OnClickListener;
+import com.cyberpanterra.book.Interfaces.RemoveOnClickListener;
 import com.cyberpanterra.book.R;
 
 import java.util.List;
 
 public class ThemesDataAdapter extends RecyclerView.Adapter<ThemesDataAdapter.MyViewHolder> {
 
+    private final ChaptersDataAdapter mChaptersAdapter;
     private final List<Theme> mThemes;
     private final OnClickListener<Theme> mOnClickListener;
-    private String mSearchedText = "";
+    private final RemoveOnClickListener<Theme, Boolean> mRemoveOnClickListener;
+    private final String mSearchedText;
+    private final boolean mIsFavourites;
+    private final boolean mTurnOnDelete;
 
-    public ThemesDataAdapter(List<Theme> themes, OnClickListener<Theme> listener) {
+    public ThemesDataAdapter(
+            ChaptersDataAdapter chaptersAdapter,
+            boolean isFavourites,
+            List<Theme> themes,
+            OnClickListener<Theme> listener,
+            RemoveOnClickListener<Theme, Boolean> removeListener,
+            String searchedText,
+            boolean turnOnDelete) {
+        mChaptersAdapter = chaptersAdapter;
+        mIsFavourites = isFavourites;
         mThemes = themes;
         mOnClickListener = listener;
-    }
-
-    public ThemesDataAdapter(List<Theme> themes, OnClickListener<Theme> listener, String searchedText) {
-        this(themes, listener);
+        mRemoveOnClickListener = removeListener;
         mSearchedText = searchedText;
+        mTurnOnDelete = turnOnDelete;
     }
 
     @NonNull
@@ -49,28 +62,37 @@ public class ThemesDataAdapter extends RecyclerView.Adapter<ThemesDataAdapter.My
     @Override
     public int getItemCount() { return mThemes.size(); }
 
-    public void setSearchedText(String searchedText) { mSearchedText = searchedText; }
-
     public class MyViewHolder extends RecyclerView.ViewHolder{
         private final View chapterView;
         private final TextView nameText;
         private final TextView indexText;
+        private final ImageView favouriteView;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             chapterView = itemView;
             nameText = itemView.findViewById(R.id.themeName);
             indexText = itemView.findViewById(R.id.themeIndex);
+            favouriteView = itemView.findViewById(R.id.favouriteView);
         }
 
         public void bindDataView(int position){
             Theme theme = mThemes.get(position);
 
-            chapterView.setOnClickListener(view ->
-                    mOnClickListener.OnClick(theme));
-
+            chapterView.setOnClickListener(view -> mOnClickListener.OnClick(theme));
             nameText.setText(theme.getName());
             indexText.setText(theme.getIndex());
+
+            if(mIsFavourites) {
+                favouriteView.setVisibility(mTurnOnDelete ? View.VISIBLE : View.GONE);
+                favouriteView.setOnClickListener(view -> {
+                    int index = mThemes.indexOf(theme);
+                    mThemes.remove(theme);
+                    if (mThemes.isEmpty()) mChaptersAdapter.removeChapter(theme.getChapter());
+                    notifyItemRemoved(index);
+                    mRemoveOnClickListener.OnClick(theme, false);
+                });
+            }else favouriteView.setVisibility(View.GONE);
 
             StaticClass.setHighLightedText(nameText, mSearchedText);
             StaticClass.setHighLightedText(indexText, mSearchedText);

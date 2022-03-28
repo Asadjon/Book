@@ -26,6 +26,8 @@ public class FavouriteRepository {
 
     public void removeTheme(Theme theme) { favouriteThemes.removeTheme(theme); }
 
+    public void removeChapter(Chapter chapter) { favouriteThemes.removeChapter(chapter); }
+
     public boolean isContains(Theme theme) { return favouriteThemes.isContains(theme); }
 
     public LiveData<List<Chapter>> getFavourites() { return favouriteThemes.getFavouriteChapters(); }

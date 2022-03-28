@@ -15,6 +15,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
+import com.cyberpanterra.book.Interfaces.Action;
+
+import java.util.Comparator;
+import java.util.List;
+
 public class StaticClass {
 
     public static void setHighLightedText(TextView tv, String textToHighlight) {
@@ -48,5 +53,18 @@ public class StaticClass {
         InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         if(!isShow) inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         else inputMethodManager.showSoftInputFromInputMethod(view.getWindowToken(), 1);
+    }
+
+    public static <T> void forEach(List<T> list,  Action.IAction<T> function){
+        for(T t1 : list)
+            try { function.call(t1); }
+            catch (Exception e) { e.printStackTrace(); }
+    }
+
+    public static <T> boolean contains(List<T> list, Action.IRAction<T, Boolean> function){
+        for(T t1 : list)
+            try { if(function.call(t1)) return true; }
+            catch (Exception e) { e.printStackTrace(); }
+        return false;
     }
 }

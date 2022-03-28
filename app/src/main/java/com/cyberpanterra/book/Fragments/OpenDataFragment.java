@@ -2,7 +2,6 @@ package com.cyberpanterra.book.Fragments;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
@@ -31,7 +30,7 @@ import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.util.FileUtils;
 import com.github.barteksc.pdfviewer.util.FitPolicy;
 
-import org.jetbrains.annotations.NotNull;
+import java.util.Objects;
 
 public class OpenDataFragment extends Fragment implements IOnBackPressed {
 
@@ -46,7 +45,7 @@ public class OpenDataFragment extends Fragment implements IOnBackPressed {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setToolbar(view.findViewById(R.id.openDataToolbar));
+        setToolbar();
 
         mPdfView = view.findViewById(R.id.pdfViewer);
 
@@ -56,6 +55,10 @@ public class OpenDataFragment extends Fragment implements IOnBackPressed {
         mViewModel.getData().observe(requireActivity(), data -> {
             mTheme = data;
             isFavourite = favouriteViewModel.isContainsFavourite(data);
+
+            AppCompatActivity activity = (AppCompatActivity) getActivity();
+            if(activity != null && activity.getSupportActionBar() != null)
+                activity.getSupportActionBar().setTitle(mTheme.getChapter().getName() + " " + mTheme.getIndex() + " - " + mTheme.getName());
 
             int[] pages = new int[mTheme.getPages().toPage - mTheme.getPages().fromPage + 1];
             for (int i = 0; i < pages.length; i++) pages[i] = mTheme.getPages().fromPage + i - 1;
@@ -85,12 +88,10 @@ public class OpenDataFragment extends Fragment implements IOnBackPressed {
         });
     }
 
-    private void setToolbar(@NotNull Toolbar toolbar){
-        toolbar.inflateMenu(R.menu.menu_open_data);
+    private void setToolbar(){
         AppCompatActivity activity = (AppCompatActivity) getActivity();
 
         if(activity != null) {
-            activity.setSupportActionBar(toolbar);
             ActionBar ab = activity.getSupportActionBar();
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setDisplayShowHomeEnabled(true);

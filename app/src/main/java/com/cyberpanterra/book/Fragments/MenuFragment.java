@@ -6,11 +6,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -36,30 +35,38 @@ public class MenuFragment extends Fragment implements IOnBackPressed {
     private SharedViewModel sharedViewModel;
     private ChaptersDataAdapter mAdapter;
     private SearchView mSearchView;
+    private RecyclerView mRecyclerView;
+    private TextView mEmptyText;
     private boolean mIsExpandSearchView = false;
 
-    public MenuFragment() { super(R.layout.fragment_home); }
+    public MenuFragment() { super(R.layout.fragment_menu); }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setToolbar(view.findViewById(R.id.menuToolbar));
+        setHasOptionsMenu(true);
 
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
         List<Chapter> chapters = ChaptersData.getInstance(requireContext(), MainActivity.DATABASE_NAME).getChapterList();
-        RecyclerView recyclerView = view.findViewById(R.id.chapters);
-        mAdapter = new ChaptersDataAdapter(chapters, this::OnClick, this::OnClick);
-        recyclerView.setAdapter(mAdapter);
-        recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 0);
+        mRecyclerView = view.findViewById(R.id.recyclerView);
+        mAdapter = new ChaptersDataAdapter(false, chapters, this::OnClick, null);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 0);
+
+        mEmptyText = view.findViewById(R.id.emptyText);
+
+        favouriteEmpty();
     }
 
-    private void setToolbar(@NotNull Toolbar toolbar){
-        setHasOptionsMenu(true);
-        toolbar.inflateMenu(R.menu.menu_search);
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-
-        if(activity != null) activity.setSupportActionBar(toolbar);
+    private void favouriteEmpty(){
+        if(mAdapter.getChapters().isEmpty()){
+            mRecyclerView.setVisibility(View.GONE);
+            mEmptyText.setVisibility(View.VISIBLE);
+        }else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyText.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -83,7 +90,8 @@ public class MenuFragment extends Fragment implements IOnBackPressed {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                mAdapter.getFilter().filter(newText);
+                mAdapter.filter(newText);
+                favouriteEmpty();
                 return false;
             }
         });

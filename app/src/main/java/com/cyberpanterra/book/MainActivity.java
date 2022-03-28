@@ -1,11 +1,15 @@
 package com.cyberpanterra.book;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
 
 import com.cyberpanterra.book.Datas.FavouriteDatabaseController;
 import com.cyberpanterra.book.Interfaces.IOnBackPressed;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -49,4 +53,10 @@ public class MainActivity extends AppCompatActivity {
         else super.onBackPressed();
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.action_about)
+            startActivity(new Intent(this, AboutActivity.class));
+        return super.onOptionsItemSelected(item);
+    }
 }
