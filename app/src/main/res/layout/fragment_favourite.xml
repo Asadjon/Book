@@ -7,8 +7,8 @@
     tools:context=".Fragments.FavouriteFragment">
 
     <include
+        layout="@layout/fragment_menu"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        layout="@layout/fragment_menu"/>
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

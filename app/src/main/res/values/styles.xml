@@ -1,7 +1,26 @@
 <resources>
 
-    <style name="Widget.Theme.Book.ButtonBar.Fullscreen" parent="">
-<!--        <item name="android:background">@color/black_overlay</item>-->
-<!--        <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>-->
+    <style name="years_textview" parent="@style/textViewsStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAlignment">textStart</item>
+    </style>
+
+    <style name="title_textview" parent="@style/textViewsStyle">
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">15dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAlignment">textStart</item>
+    </style>
+
+    <style name="textViewsStyle" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="backgroundColor">
+        <item name="backgroundColor">@color/background_color</item>
     </style>
 </resources>

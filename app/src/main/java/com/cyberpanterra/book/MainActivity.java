@@ -2,7 +2,6 @@ package com.cyberpanterra.book;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.cyberpanterra.book.Datas.FavouriteDatabaseController;
@@ -11,6 +10,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView mNavView;
     private NavHostFragment mNavHostFragment;
+    private boolean isDarkMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == R.id.action_about)
-            startActivity(new Intent(this, AboutActivity.class));
+            startActivity(new Intent(this, AuthorActivity.class));
+
         return super.onOptionsItemSelected(item);
     }
 }

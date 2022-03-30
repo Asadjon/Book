@@ -11,37 +11,38 @@
         android:id="@+id/chapter"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/favouriteView"
-        app:layout_constraintTop_toTopOf="parent"
-        android:orientation="horizontal">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/themeIndex"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="5dp"
             android:text="1.1"
             android:textColor="@color/black"
             android:textSize="14sp"
-            android:textStyle="bold"
-            android:padding="5dp"
-            android:layout_gravity="center_vertical"/>
+            android:textStyle="bold" />
 
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="@color/black"/>
+            android:background="@color/black" />
 
         <TextView
             android:id="@+id/themeName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="5dp"
             android:text="Предметы, задачи и общие принципы дошкольной педагогики"
             android:textColor="@color/black"
             android:textSize="14sp"
-            android:textStyle="italic"
-            android:padding="5dp"
-            android:layout_gravity="center_vertical"/>
+            android:textStyle="italic" />
     </LinearLayout>
 
     <ImageView

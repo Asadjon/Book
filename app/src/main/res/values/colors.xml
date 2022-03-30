@@ -15,4 +15,5 @@
     <color name="search_query_text">#80FFFFFF</color>
     <color name="theme_color">#FFF1C6</color>
     <color name="chapter_color">#FFF1C6</color>
+    <color name="background_color">#FFFFFF</color>
 </resources>

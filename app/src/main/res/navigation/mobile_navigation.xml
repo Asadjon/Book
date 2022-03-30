@@ -9,7 +9,7 @@
         android:id="@+id/navigation_menu"
         android:name="com.cyberpanterra.book.Fragments.MenuFragment"
         android:label="@string/title_menu"
-        tools:layout="@layout/fragment_Menu" >
+        tools:layout="@layout/fragment_menu" >
         <action
             android:id="@+id/action_navigation_home_to_navigation_dashboard"
             app:destination="@id/navigation_saved" />

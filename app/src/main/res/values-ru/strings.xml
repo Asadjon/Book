@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Дошкольная педагогика</string>
+    <string name="activity_author_name" translatable="false">Автор</string>
+    <string name="title_menu" translatable="false">Меню</string>
+    <string name="title_favourite" translatable="false">Избранное</string>
+    <string name="title_open_data" translatable="false">Открытые данные</string>
+    <string name="title_notifications" translatable="false">Уведомления</string>
+    <string name="title_delete" translatable="false">Удалить</string>
+    <string name="title_search" translatable="false">Поиск</string>
+</resources>

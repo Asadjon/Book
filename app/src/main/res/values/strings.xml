@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">Book</string>
+    <string name="app_name">Preschool Pedagogy</string>
+    <string name="activity_author_name">Author</string>
     <string name="title_menu">Menu</string>
     <string name="title_favourite">Favourite</string>
-    <string name="title_open_data">Open data</string>
+    <string name="title_open_data">Theme</string>
     <string name="title_notifications">Notifications</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="about">About</string>
+    <string name="title_delete">Delete</string>
+    <string name="title_search">Search</string>
 </resources>

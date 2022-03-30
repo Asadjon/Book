@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Preschool Pedagogy</string>
+    <string name="activity_author_name" translatable="false">Author</string>
+    <string name="title_menu" translatable="false">Menu</string>
+    <string name="title_favourite" translatable="false">Favourite</string>
+    <string name="title_open_data" translatable="false">Theme</string>
+    <string name="title_notifications" translatable="false">Notifications</string>
+    <string name="title_delete" translatable="false">Delete</string>
+    <string name="title_search" translatable="false">Search</string>
+</resources>
