@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.cyberpanterra.book.Interfaces.Action;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -56,15 +57,18 @@ public class StaticClass {
     }
 
     public static <T> void forEach(List<T> list,  Action.IAction<T> function){
-        for(T t1 : list)
-            try { function.call(t1); }
-            catch (Exception e) { e.printStackTrace(); }
+        for(T t1 : list) function.call(t1);
     }
 
     public static <T> boolean contains(List<T> list, Action.IRAction<T, Boolean> function){
         for(T t1 : list)
-            try { if(function.call(t1)) return true; }
-            catch (Exception e) { e.printStackTrace(); }
+            if(function.call(t1)) return true;
         return false;
+    }
+
+    public static <T> List<T> whereAll(List<T> list, Action.IRAction<T, Boolean> function){
+        List<T> newList = new ArrayList<>();
+        for(T t1 : list) if(function.call(t1)) newList.add(t1);
+        return newList;
     }
 }

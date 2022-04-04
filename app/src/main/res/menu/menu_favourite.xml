@@ -8,10 +8,5 @@
         android:icon="@drawable/ic_search_black_24dp"
         app:showAsAction="ifRoom"
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
-    <item
-        android:id="@+id/action_delete"
-        android:title="@string/title_delete"
-        android:icon="@drawable/ic_baseline_delete_24_white"
-        app:showAsAction="ifRoom"/>
 
 </menu>

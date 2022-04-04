@@ -1,5 +1,6 @@
 package com.cyberpanterra.book.Fragments;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,23 +51,19 @@ public class MenuFragment extends Fragment implements IOnBackPressed {
 
         List<Chapter> chapters = ChaptersData.getInstance(requireContext(), MainActivity.DATABASE_NAME).getChapterList();
         mRecyclerView = view.findViewById(R.id.recyclerView);
-        mAdapter = new ChaptersDataAdapter(false, chapters, this::OnClick, null);
+        mRecyclerView.setHasFixedSize(true);
+        mAdapter = new ChaptersDataAdapter(null, this::OnClick);
+        mAdapter.setChapters(chapters);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 0);
 
         mEmptyText = view.findViewById(R.id.emptyText);
 
-        favouriteEmpty();
+        favouriteEmpty(mAdapter.getCurrentList().isEmpty());
     }
 
-    private void favouriteEmpty(){
-        if(mAdapter.getChapters().isEmpty()){
-            mRecyclerView.setVisibility(View.GONE);
-            mEmptyText.setVisibility(View.VISIBLE);
-        }else {
-            mRecyclerView.setVisibility(View.VISIBLE);
-            mEmptyText.setVisibility(View.GONE);
-        }
+    private void favouriteEmpty(boolean isEmpty){
+        mEmptyText.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -90,8 +87,7 @@ public class MenuFragment extends Fragment implements IOnBackPressed {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                mAdapter.filter(newText);
-                favouriteEmpty();
+                favouriteEmpty(mAdapter.filter(newText));
                 return false;
             }
         });

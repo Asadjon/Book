@@ -86,13 +86,8 @@ public class Chapter {
         if (o == null || getClass() != o.getClass()) return false;
         Chapter chapter = (Chapter) o;
         return mId == chapter.mId &&
-                Objects.equals(mName, chapter.mName) &&
-                Objects.equals(mValue, chapter.mValue);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(mId, mName, mValue, mSerializedThemes, mNonSerializedThemes, mFullThemes);
+                mName.equals(chapter.mName) &&
+                mValue.equals(chapter.mValue);
     }
 }
 

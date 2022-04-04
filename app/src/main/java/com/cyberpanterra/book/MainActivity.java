@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView mNavView;
     private NavHostFragment mNavHostFragment;
-    private boolean isDarkMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

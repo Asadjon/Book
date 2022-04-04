@@ -8,9 +8,9 @@ package com.cyberpanterra.book.Interfaces;
 public class Action{
 
     public interface IRAction<TInput, TResult> {
-        TResult call(TInput target) throws Exception;
+        TResult call(TInput target);
     }
     public interface IAction<TInput> {
-        void call(TInput target) throws Exception;
+        void call(TInput target);
     }
 }

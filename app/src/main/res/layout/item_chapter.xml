@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="5dp"
+    app:cardBackgroundColor="@color/chapter_color"
     app:cardCornerRadius="10dp"
-    app:cardElevation="5dp"
-    app:cardBackgroundColor="@color/chapter_color">
+    app:cardElevation="5dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -15,60 +15,54 @@
 
         <LinearLayout
             android:id="@+id/chapter"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/favouriteView"
-            app:layout_constraintTop_toTopOf="parent"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/chapterName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="5dp"
                 android:text="ГЛАВА I."
                 android:textColor="@color/black"
                 android:textSize="14sp"
-                android:textStyle="bold"
-                android:padding="5dp"
-                android:layout_gravity="center_vertical"/>
+                android:textStyle="bold" />
 
             <View
                 android:id="@+id/separatorView"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/black"/>
+                android:background="@color/black" />
 
             <TextView
                 android:id="@+id/chapterValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="5dp"
                 android:text="ВВЕДЕНИЯ В СПЕЦИАЛЬНОСТЬ"
                 android:textColor="@color/black"
                 android:textSize="14sp"
-                android:textStyle="bold"
-                android:padding="5dp"
-                android:layout_gravity="center_vertical"/>
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/favouriteView"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            app:srcCompat="@drawable/ic_baseline_delete_24"
-            android:scaleType="fitCenter"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/chapter"
-            app:layout_constraintBottom_toBottomOf="@id/chapter"
-            android:layout_marginEnd="5dp"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/themes"
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/chapter"
-            android:padding="10dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+            android:padding="5dp"
+            app:layout_constraintTop_toBottomOf="@id/chapter">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/themes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_theme" />
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

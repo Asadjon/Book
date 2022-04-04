@@ -60,13 +60,8 @@ public class Theme {
         if (o == null || getClass() != o.getClass()) return false;
         Theme theme = (Theme) o;
         return mId == theme.mId &&
-                Objects.equals(mName, theme.mName) &&
-                Objects.equals(mIndex, theme.mIndex) &&
-                Objects.equals(mPages, theme.mPages);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(mChapter, mId, mName, mIndex, mPages, mIsSerialized);
+                mName.equals(theme.mName) &&
+                mIndex.equals(theme.mIndex) &&
+                mPages.equals(theme.mPages);
     }
 }

@@ -90,11 +90,9 @@ public class OpenDataFragment extends Fragment implements IOnBackPressed {
 
     private void setToolbar(){
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-
-        if(activity != null) {
-            ActionBar ab = activity.getSupportActionBar();
+        ActionBar ab;
+        if(activity != null && (ab = activity.getSupportActionBar()) != null) {
             ab.setDisplayHomeAsUpEnabled(true);
-            ab.setDisplayShowHomeEnabled(true);
             setHasOptionsMenu(true);
         }
     }
@@ -113,15 +111,15 @@ public class OpenDataFragment extends Fragment implements IOnBackPressed {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == android.R.id.home) requireActivity().onBackPressed();
-        else if (item.getItemId() == R.id.action_favourite) changeFavourite();
+        if (item.getItemId() == R.id.action_favourite) changeFavourite();
 
         return super.onOptionsItemSelected(item);
     }
 
     private void changeFavourite(){
         isFavourite = !isFavourite;
-        if(isFavourite) favouriteViewModel.addFavourite(mTheme.clone());
-        else favouriteViewModel.removeFavourite(mTheme.clone());
+        if(isFavourite) favouriteViewModel.addFavourite(mTheme);
+        else favouriteViewModel.removeFavourite(mTheme);
     }
 
     private FavouriteViewModelFactory provideFavouriteViewModelFactory(){
