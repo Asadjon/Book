@@ -19,39 +19,51 @@ public class ChaptersData extends JsonDataLoader {
 
     @SuppressLint("StaticFieldLeak")
     private static ChaptersData instance = null;
-    public static ChaptersData getInstance(Context context, String fileName){
+
+    public static ChaptersData getInstance(Context context, String fileName) {
         return instance == null ? (instance = new ChaptersData(context, fileName)) : instance;
     }
 
     private ChaptersData(Context context, String fileName) { super(context, fileName); }
 
-    public List<Chapter> getChapterList() {
+    public List<SimpleChapter> getChapterList() {
         JSONArray chaptersJson = getValue(getMainJsonObject(), "Contents");
-        List<Chapter> chapters = new ArrayList<>();
+        List<SimpleChapter> chapters = new ArrayList<>();
 
-        try { for (int i = 0; i < chaptersJson.length(); i++) {
+        try {
+            for (int i = 0; i < chaptersJson.length(); i++) {
                 JSONObject chapterJson = chaptersJson.getJSONObject(i);
-                JSONArray themesJson = getValue(chapterJson, "Themes");
-                List<Theme> themes = new ArrayList<>();
+                JSONArray chapterPageJson = getValue(chapterJson, "Pages");
+                Pages pages = new Pages(chapterPageJson.getInt(0), chapterPageJson.getInt(1));
 
-                for (int j = 0; j < themesJson.length(); j++) {
-                    JSONObject themeJson = themesJson.getJSONObject(j);
-                    JSONArray pageJson = getValue(themeJson, "Pages");
-                    themes.add(new Theme(
-                                    getValue(themeJson, "Id"),
-                                    getValue(themeJson, "Index"),
-                                    getValue(themeJson, "Name"),
-                                    getValue(themeJson, "IsSerialized"),
-                                    new Pages(pageJson.getInt(0), pageJson.getInt(1))));
+                if (chapterJson.has("Themes")) {
+                    JSONArray themesJson = getValue(chapterJson, "Themes");
+                    List<Theme> themes = new ArrayList<>();
+                    for (int j = 0; j < themesJson.length(); j++) {
+                        JSONObject themeJson = themesJson.getJSONObject(j);
+                        JSONArray pageJson = getValue(chapterJson, "Pages");
+                        themes.add(new Theme(
+                                getValue(themeJson, "Id"),
+                                getValue(themeJson, "Index"),
+                                getValue(themeJson, "Name"),
+                                new Pages(pageJson.getInt(0), pageJson.getInt(1))));
+                    }
+                    chapters.add(new Chapter(
+                            getValue(chapterJson, "Chapter"),
+                            getValue(chapterJson, "Name"),
+                            getValue(chapterJson, "Value"),
+                            pages).set(themes));
+                } else {
+                    chapters.add(new SimpleChapter(
+                            getValue(chapterJson, "Chapter"),
+                            getValue(chapterJson, "Name"),
+                            getValue(chapterJson, "Value"),
+                            pages));
                 }
-
-                chapters.add(new Chapter(
-                                getValue(chapterJson, "Chapter"),
-                                getValue(chapterJson, "Name"),
-                                getValue(chapterJson, "Value"),
-                                themes));
             }
-        } catch (JSONException e) { e.printStackTrace(); }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return chapters;
     }
 }

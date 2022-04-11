@@ -23,4 +23,13 @@
     <style name="backgroundColor">
         <item name="backgroundColor">@color/background_color</item>
     </style>
+
+    <style name="Widget.Theme.Book.ActionBar.Fullscreen" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/black_overlay</item>
+    </style>
+
+    <style name="Widget.Theme.Book.ButtonBar.Fullscreen" parent="">
+        <item name="android:background">@color/black_overlay</item>
+        <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
+    </style>
 </resources>

@@ -11,83 +11,64 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
-public class Chapter {
-    private final int mId;
-    private final String mName;
-    private final String mValue;
-    private final List<Theme> mSerializedThemes = new ArrayList<>();
-    private final List<Theme> mNonSerializedThemes = new ArrayList<>();
-    private final List<Theme> mFullThemes = new ArrayList<>();
+public class Chapter extends SimpleChapter {
+    final List<Theme> themeList = new ArrayList<>();
+    final List<Theme> fullList = new ArrayList<>();
 
-    public Chapter(int id, String name, String value, List<Theme> themes) {
-        mId = id;
-        mName = name;
-        mValue = value;
-
-        setThemes(themes);
+    public Chapter(int id, String name, String value, Pages pages) {
+        super(id, name, value, pages);
+        setName(name).setValue(value);
     }
 
-    public int getId() { return mId; }
+    public boolean isEmpty() { return themeList.isEmpty(); }
 
-    public String getName() { return mName; }
+    public int size() { return themeList.size(); }
 
-    public String getValue() { return mValue; }
+    public int indexOf(Theme theme) { return themeList.indexOf(theme); }
 
-    public List<Theme> getSerializedThemes() { return mSerializedThemes; }
+    public Theme get(int index) { return themeList.get(index); }
 
-    public List<Theme> getFullThemes() { return mFullThemes; }
-
-    public Chapter setThemes(List<Theme> themes) {
-        mFullThemes.clear();
-        mSerializedThemes.clear();
-        mNonSerializedThemes.clear();
-
-        StaticClass.forEach(themes, theme -> {
-            if (theme.isSerialized()) mSerializedThemes.add(theme);
-            else mNonSerializedThemes.add(theme);
-            theme.setChapter(this);
-        });
-
-        mFullThemes.addAll(themes);
+    public Chapter set(List<Theme> themes) {
+        StaticClass.forEach(themes, theme -> theme.setChapter(this));
+        themeList.clear();
+        fullList.clear();
+        themeList.addAll(themes);
+        fullList.addAll(themeList);
         return this;
     }
 
-    public void addTheme(Theme newTheme){
-        if(!mFullThemes.contains(newTheme)) {
-            mFullThemes.add(newTheme);
-            Collections.sort(mFullThemes, (theme, theme1) -> theme.getId() - theme1.getId());
-            setThemes(new ArrayList<>(mFullThemes));
+    public void add(Theme newTheme){
+        if(!themeList.contains(newTheme)) {
+            themeList.add(newTheme);
+            Collections.sort(themeList, (theme, theme1) -> theme.getId() - theme1.getId());
+            set(new ArrayList<>(themeList));
         }
     }
 
-    public void removeTheme(Theme theme){
-        if(mFullThemes.contains(theme)) {
-            mFullThemes.remove(theme);
-            setThemes(new ArrayList<>(mFullThemes));
+    public void remove(Theme theme){
+        if(themeList.contains(theme)) {
+            themeList.remove(theme);
+            set(new ArrayList<>(themeList));
         }
+    }
+
+    public void resetList(){
+        themeList.clear();
+        themeList.addAll(fullList);
     }
 
     public boolean isSearchResult(String searchingText){
-        return StaticClass.contains(mFullThemes, target ->
-                target.getName().toUpperCase().contains(searchingText) ||
-                        target.getIndex().toUpperCase().contains(searchingText));
+        themeList.clear();
+        themeList.addAll(StaticClass.whereAll(fullList, theme ->
+                theme.getName().toUpperCase().contains(searchingText) ||
+                        theme.getValue().toUpperCase().contains(searchingText)));
+
+        return !themeList.isEmpty();
     }
 
     @NotNull
-    public Chapter clone() { return new Chapter(mId, mName, mValue, mFullThemes); }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Chapter chapter = (Chapter) o;
-        return mId == chapter.mId &&
-                mName.equals(chapter.mName) &&
-                mValue.equals(chapter.mValue);
-    }
+    public Chapter clone() { return new Chapter(id, name, value, pages).set(themeList); }
 }
 

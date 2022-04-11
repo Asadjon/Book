@@ -9,142 +9,166 @@ import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Filter;
+import android.widget.Filterable;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cyberpanterra.book.Datas.Chapter;
-import com.cyberpanterra.book.Datas.Theme;
+import com.cyberpanterra.book.Datas.Data;
+import com.cyberpanterra.book.Datas.SimpleChapter;
 import com.cyberpanterra.book.Interactions.StaticClass;
-import com.cyberpanterra.book.Interfaces.ForAdapters;
 import com.cyberpanterra.book.Interfaces.OnClickListener;
 import com.cyberpanterra.book.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChaptersDataAdapter extends ListAdapter<Chapter, ChaptersDataAdapter.MyViewHolder> {
+public class ChaptersDataAdapter extends RecyclerView.Adapter<ViewHolder> implements Filterable {
 
-    private final List<Chapter> mFullChapters = new ArrayList<>();
-    private final ForAdapters forAdapters;
-    private final OnClickListener<Theme> mOnClickListener;
-    private String mSearchedText = "";
+    private List<SimpleChapter> chapterList = new ArrayList<>();
+    private final List<SimpleChapter> mFullChapters = new ArrayList<>();
+    private OnClickListener<Data> onActionListener;
+    private OnClickListener<Data> onClickListener;
+    private String searchedText = "";
     private boolean isSelected = false;
 
-    public ChaptersDataAdapter(ForAdapters forAdapters, OnClickListener<Theme> listener) {
-        super(DIFF_CALLBACK);
+    public ChaptersDataAdapter() { }
 
-        this.forAdapters = forAdapters;
-        mOnClickListener = listener;
-//        setHasStableIds(false);
+    public ChaptersDataAdapter(List<SimpleChapter> chapterList) {
+        setHasStableIds(false);
+        this.chapterList = chapterList;
     }
 
-    private static final DiffUtil.ItemCallback<Chapter> DIFF_CALLBACK = new DiffUtil.ItemCallback<Chapter>() {
-        @Override
-        public boolean areItemsTheSame(@NonNull Chapter oldItem, @NonNull Chapter newItem) {
-            return oldItem.getId() == newItem.getId();
-        }
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        new ItemTouchHelper(getOnRemoveListener()).attachToRecyclerView(recyclerView);
+        super.onAttachedToRecyclerView(recyclerView);
+    }
 
-        @Override
-        public boolean areContentsTheSame(@NonNull Chapter oldItem, @NonNull Chapter newItem) {
-            return oldItem.equals(newItem);
-        }
-    };
+    public ItemTouchHelper.SimpleCallback getOnRemoveListener() {
+        return new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean isItemViewSwipeEnabled() { return isSelected; }
 
-    public void setChapters(List<Chapter> list) {
-        submitList(list);
-        if (list != null) mFullChapters.addAll(list);
-        else mFullChapters.clear();
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                if (onActionListener != null)
+                    onActionListener.onClick(((ViewHolder) viewHolder).data);
+            }
+        };
+    }
+
+    public ChaptersDataAdapter setChapterList(List<SimpleChapter> list) {
+        if (list != null) {
+            mFullChapters.clear();
+            mFullChapters.addAll(list);
+            chapterList = list;
+            notifyDataSetChanged();
+        }
+        return this;
     }
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chapter, parent, false));
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chapter, parent, false))
+                .setOnClickListener(onClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) { holder.bindDataView(); }
-
-    public boolean filter(String searchText) {
-        mSearchedText = searchText.toUpperCase().trim();
-
-        List<Chapter> filteredList = new ArrayList<>();
-
-        if (mSearchedText == null || mSearchedText.isEmpty()) filteredList.addAll(mFullChapters);
-        else filteredList.addAll(StaticClass.whereAll(mFullChapters,
-                data -> data.isSearchResult(mSearchedText) || data.getName().toUpperCase().contains(mSearchedText) || data.getValue().toUpperCase().contains(mSearchedText)));
-
-        submitList(filteredList);
-        notifyDataSetChanged();
-
-        return filteredList.isEmpty();
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.setSearchText(searchedText)
+                .bindDataView(getItem(position));
     }
 
-    public Chapter getChapterAt(int position) { return getItem(position); }
+    @Override
+    public int getItemCount() { return chapterList.size(); }
 
-    public boolean isSelected() { return isSelected; }
+    public SimpleChapter getItem(int position) { return chapterList.get(position); }
 
-    public void setSelected(boolean selected) { isSelected = selected; }
+    @Override
+    public Filter getFilter() { return filter; }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
-        private final View separatorView;
-        private final TextView nameText;
-        private final TextView valueText;
+    public Filter filter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            List<SimpleChapter> filteredList = new ArrayList<>();
+
+            searchedText = charSequence.toString().toUpperCase().trim();
+            if (searchedText.isEmpty()) {
+                filteredList.addAll(mFullChapters);
+                StaticClass.forEach(filteredList, chapter -> {
+                    if (chapter.getClass() == Chapter.class) ((Chapter) chapter).resetList();
+                });
+            }
+            else filteredList.addAll(StaticClass.whereAll(mFullChapters,
+                    data -> (data.getClass() == Chapter.class && ((Chapter) data).isSearchResult(searchedText)) ||
+                            data.getName().toUpperCase().contains(searchedText) ||
+                            data.getValue().toUpperCase().contains(searchedText)));
+
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            if (filterResults.values != null) {
+                chapterList = (List<SimpleChapter>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        }
+    };
+
+    public List<SimpleChapter> getFullChapters() { return mFullChapters; }
+
+    public ChaptersDataAdapter setOnActionListener(OnClickListener<Data> Listener) {
+        onActionListener = Listener;
+        return this;
+    }
+
+    public ChaptersDataAdapter setOnClickListener(OnClickListener<Data> listener) {
+        onClickListener = listener;
+        return this;
+    }
+
+    public class MyViewHolder extends ViewHolder {
         private final RecyclerView themesRecyclerView;
-
 
         @SuppressLint("ClickableViewAccessibility")
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            separatorView = itemView.findViewById(R.id.separatorView);
-            nameText = itemView.findViewById(R.id.chapterName);
-            valueText = itemView.findViewById(R.id.chapterValue);
             themesRecyclerView = itemView.findViewById(R.id.themes);
-            themesRecyclerView.setHasFixedSize(true);
+            themesRecyclerView.setHasFixedSize(false);
 
-            itemView.setOnTouchListener((view, motionEvent) -> { isSelected = true; return false; });
+            itemView.setOnTouchListener((view, motionEvent) -> {
+                int action = motionEvent.getAction();
+                if (action == MotionEvent.ACTION_DOWN) isSelected = true;
+                else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL)
+                    isSelected = false;
+                return false;
+            });
         }
 
-        public void bindDataView() {
-            Chapter chapter = getItem(getAdapterPosition());
-            if (chapter.getSerializedThemes().size() != 0) {
-                ThemesDataAdapter adapter = new ThemesDataAdapter(mOnClickListener, mSearchedText);
-                themesRecyclerView.setAdapter(adapter);
-                adapter.submitList(chapter.getSerializedThemes());
-                if (forAdapters != null)
-                    new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-                        @Override
-                        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                            return false;
-                        }
+        @Override
+        public ViewHolder bindDataView(Data data) {
+            if (data.getClass() == Chapter.class)
+                themesRecyclerView.setAdapter(new ThemesDataAdapter((Chapter) data)
+                        .setOnClickListener(onClickListener)
+                        .setOnActionListener(onActionListener)
+                        .setSearchText(searchedText));
 
-                        @Override
-                        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                            Theme removedTheme = adapter.getThemeAt(viewHolder.getAdapterPosition());
-                            forAdapters.getFavouriteViewModel().removeFavourite(removedTheme);
-                            forAdapters.checkFavourites();
-                            adapter.notifyDataSetChanged();
-                        }
-                    }).attachToRecyclerView(themesRecyclerView);
-            } else {
-                themesRecyclerView.setVisibility(View.INVISIBLE);
-                themesRecyclerView.setAdapter(null);
-            }
-
-            itemView.setOnClickListener(view -> mOnClickListener.OnClick(chapter.getFullThemes().get(0)));
-            separatorView.setVisibility(chapter.getValue().equals("") ? View.GONE : View.VISIBLE);
-            nameText.setText(chapter.getName());
-            valueText.setText(chapter.getValue());
-
-            StaticClass.setHighLightedText(nameText, mSearchedText);
-            StaticClass.setHighLightedText(valueText, mSearchedText);
+            else themesRecyclerView.setAdapter(null);
+            return super.bindDataView(data);
         }
     }
 }

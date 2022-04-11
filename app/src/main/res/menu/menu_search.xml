@@ -6,13 +6,13 @@
         android:id="@+id/action_search"
         android:title="@android:string/search_go"
         android:icon="@drawable/ic_search_black_24dp"
-        app:showAsAction="ifRoom"
+        app:showAsAction="ifRoom|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
 
     <item
         android:id="@+id/action_about"
         android:title="@string/activity_author_name"
         android:icon="@drawable/ic_baseline_account_box_24"
-        app:showAsAction="ifRoom|withText"/>
+        app:showAsAction="always"/>
 
 </menu>

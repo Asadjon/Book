@@ -16,4 +16,5 @@
     <color name="theme_color">#A4A3A3</color>
     <color name="chapter_color">#A4A3A3</color>
     <color name="background_color">#484848</color>
+    <color name="ic_launcher_background">#3DDC84</color>
 </resources>

@@ -12,23 +12,25 @@ import java.util.List;
 public class FavouriteRepository {
     private static FavouriteRepository repository = null;
 
-    public static FavouriteRepository getInstance(FavouriteThemes favouriteThemes){
+    public static FavouriteRepository getInstance(Favourites favouriteThemes){
         return repository != null ? repository : (repository = new FavouriteRepository(favouriteThemes));
     }
 
-    private FavouriteRepository(FavouriteThemes favouriteThemes) {
-        this.favouriteThemes = favouriteThemes;
+    private FavouriteRepository(Favourites favouriteThemes) {
+        this.favourites = favouriteThemes;
     }
 
-    private final FavouriteThemes favouriteThemes;
+    private final Favourites favourites;
 
-    public void addTheme(Theme theme) { favouriteThemes.addTheme(theme); }
+    public void addChapter(SimpleChapter chapter) { favourites.addChapter(chapter); }
 
-    public void removeTheme(Theme theme) { favouriteThemes.removeTheme(theme); }
+    public void addTheme(Theme theme) { favourites.addTheme(theme); }
 
-    public void removeChapter(Chapter chapter) { favouriteThemes.removeChapter(chapter); }
+    public void removeTheme(Theme theme) { favourites.removeTheme(theme); }
 
-    public boolean isContains(Theme theme) { return favouriteThemes.isContains(theme); }
+    public void removeChapter(SimpleChapter chapter) { favourites.removeChapter(chapter); }
 
-    public LiveData<List<Chapter>> getFavourites() { return favouriteThemes.getFavouriteChapters(); }
+    public boolean isContains(Data data) { return favourites.isContains(data); }
+
+    public LiveData<List<SimpleChapter>> getFavourites() { return favourites.getFavouriteChapters(); }
 }

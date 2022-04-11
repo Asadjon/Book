@@ -18,12 +18,12 @@ import android.widget.TextView;
 import com.cyberpanterra.book.Interfaces.Action;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class StaticClass {
 
     public static void setHighLightedText(TextView tv, String textToHighlight) {
+        tv.setText(tv.getText().toString());
         String tvt = tv.getText().toString().toUpperCase().trim();
         Spannable wordToSpan = new SpannableString(tv.getText());
 
@@ -60,6 +60,12 @@ public class StaticClass {
         for(T t1 : list) function.call(t1);
     }
 
+    public static <T, T2> List<T2> getListAt(List<T> list, Action.IRAction<T, T2> function){
+        List<T2> newList = new ArrayList<>();
+        for(T t1 : list) newList.add(function.call(t1));
+        return newList;
+    }
+
     public static <T> boolean contains(List<T> list, Action.IRAction<T, Boolean> function){
         for(T t1 : list)
             if(function.call(t1)) return true;
@@ -70,5 +76,15 @@ public class StaticClass {
         List<T> newList = new ArrayList<>();
         for(T t1 : list) if(function.call(t1)) newList.add(t1);
         return newList;
+    }
+
+    public static <T> T first(List<T> list, Action.IRAction<T, Boolean> function){
+        for(T t1 : list) if(function.call(t1)) return t1;
+        return null;
+    }
+
+    public static <T> boolean trueAll(List<T> list, Action.IRAction<T, Boolean> function){
+        for(T t1 : list) if(!function.call(t1)) return false;
+        return true;
     }
 }

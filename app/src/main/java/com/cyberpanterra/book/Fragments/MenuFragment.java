@@ -1,44 +1,43 @@
 package com.cyberpanterra.book.Fragments;
 
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cyberpanterra.book.Adapters.ChaptersDataAdapter;
-import com.cyberpanterra.book.Datas.Chapter;
 import com.cyberpanterra.book.Datas.ChaptersData;
+import com.cyberpanterra.book.Datas.Data;
+import com.cyberpanterra.book.Datas.FavouriteDatabase;
+import com.cyberpanterra.book.Datas.FavouriteRepository;
+import com.cyberpanterra.book.Datas.SimpleChapter;
 import com.cyberpanterra.book.Datas.Theme;
+import com.cyberpanterra.book.Interfaces.Action;
 import com.cyberpanterra.book.Interfaces.IOnBackPressed;
-import com.cyberpanterra.book.Interactions.StaticClass;
 import com.cyberpanterra.book.MainActivity;
 import com.cyberpanterra.book.R;
-import com.cyberpanterra.book.UI.SharedViewModel;
+import com.cyberpanterra.book.UI.FavouriteViewModel;
+import com.cyberpanterra.book.UI.FavouriteViewModelFactory;
+import com.cyberpanterra.book.ViewActivity;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public class MenuFragment extends Fragment implements IOnBackPressed {
 
-    private SharedViewModel sharedViewModel;
-    private ChaptersDataAdapter mAdapter;
-    private SearchView mSearchView;
-    private RecyclerView mRecyclerView;
-    private TextView mEmptyText;
-    private boolean mIsExpandSearchView = false;
+    private FavouriteViewModel favouriteViewModel;
+    private ChaptersDataAdapter adapter;
+    private Action.IRAction<Void, Boolean> onSearchViewCollapse;
 
     public MenuFragment() { super(R.layout.fragment_menu); }
 
@@ -47,70 +46,82 @@ public class MenuFragment extends Fragment implements IOnBackPressed {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
 
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-
-        List<Chapter> chapters = ChaptersData.getInstance(requireContext(), MainActivity.DATABASE_NAME).getChapterList();
-        mRecyclerView = view.findViewById(R.id.recyclerView);
+        RecyclerView mRecyclerView = view.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
-        mAdapter = new ChaptersDataAdapter(null, this::OnClick);
-        mAdapter.setChapters(chapters);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 0);
+        adapter = new ChaptersDataAdapter()
+                .setChapterList(ChaptersData.getInstance(requireContext(), MainActivity.DATABASE_NAME).getChapterList())
+                .setOnClickListener(this::OnClick)
+                .setOnActionListener(this::onFavorite);
+        mRecyclerView.setAdapter(adapter);
 
-        mEmptyText = view.findViewById(R.id.emptyText);
-
-        favouriteEmpty(mAdapter.getCurrentList().isEmpty());
+        favouriteViewModel = new ViewModelProvider(requireActivity(), provideFavouriteViewModelFactory()).get(FavouriteViewModel.class);
     }
 
-    private void favouriteEmpty(boolean isEmpty){
-        mEmptyText.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+    @NotNull
+    @Contract(" -> new")
+    private FavouriteViewModelFactory provideFavouriteViewModelFactory() {
+        return new FavouriteViewModelFactory(FavouriteRepository.getInstance(FavouriteDatabase.getInstance(requireContext()).getFavouriteThemes()));
     }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_search, menu);
-
         MenuItem menuItem_search = menu.findItem(R.id.action_search);
-        menuItem_search.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem menuItem) { mIsExpandSearchView = true; return true; }
 
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem menuItem) { mIsExpandSearchView = false; return true; }
-        });
+        onSearchViewCollapse = target -> {
+            if (menuItem_search.isActionViewExpanded()) {
+                MenuItemCompat.collapseActionView(menuItem_search);
+                return false;
+            } else {
+                return true;
+            }
+        };
+        onSearchViewCollapse();
 
-        mSearchView = (SearchView) menuItem_search.getActionView();
-        mSearchView.setQueryHint(requireContext().getResources().getString(android.R.string.search_go));
+        SearchView mSearchView = (SearchView) menuItem_search.getActionView();
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {  return false; }
+            public boolean onQueryTextSubmit(String query) { return false; }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                favouriteEmpty(mAdapter.filter(newText));
+                adapter.getFilter().filter(newText);
                 return false;
             }
         });
 
-        EditText eSearchView = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
-        eSearchView.setHintTextColor(requireContext().getResources().getColor(R.color.search_query_text));
-        eSearchView.setTextColor(requireContext().getResources().getColor(R.color.white));
-        eSearchView.getViewTreeObserver().addOnGlobalLayoutListener(() -> StaticClass.keyboardShown(eSearchView.getRootView()));
-
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    public void OnClick(@NotNull Theme theme) {
-        if(mIsExpandSearchView) StaticClass.setShowKeyboard(requireContext(), requireActivity().getCurrentFocus(), false);
+    public void OnClick(@NotNull Data data) {
+        Intent intent = new Intent(requireContext(), ViewActivity.class);
+        int chapterIndex;
 
-        sharedViewModel.setData(theme);
-        NavHostFragment.findNavController(this).navigate(R.id.action_navigation_menu_to_navigation_open_data);
+        if (data.getClass() == Theme.class) {
+            chapterIndex = adapter.getFullChapters().indexOf(((Theme) data).getChapter());
+            int themeIndex = ((Theme) data).getChapter().indexOf(((Theme) data));
+            intent.putExtra(ViewActivity.THEME_INDEX, themeIndex);
+        } else {
+            chapterIndex = adapter.getFullChapters().indexOf(data);
+            intent.putExtra(ViewActivity.THEME_INDEX, 0);
+        }
+
+        intent.putExtra(ViewActivity.IS_FAVOURITE_VIEWER, false);
+        intent.putExtra(ViewActivity.CHAPTER_INDEX, chapterIndex);
+        startActivity(intent);
+    }
+
+    public void onFavorite(@NotNull Data data) {
+        if (data instanceof Theme) favouriteViewModel.addTheme((Theme) data);
+        else favouriteViewModel.addChapter((SimpleChapter) data);
+        adapter.notifyDataSetChanged();
+    }
+
+    private boolean onSearchViewCollapse() {
+        return onSearchViewCollapse != null ? onSearchViewCollapse.call(null) : true;
     }
 
     @Override
     public boolean onBackPressed() {
-        if(mIsExpandSearchView) mSearchView.onActionViewCollapsed();
-
-        return !mIsExpandSearchView;
+        return onSearchViewCollapse();
     }
 }

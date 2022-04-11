@@ -8,8 +8,10 @@ package com.cyberpanterra.book.Datas;
 import java.util.Objects;
 
 public class Pages{
-    public int fromPage;
-    public int toPage;
+    public int fromPage = 0;
+    public int toPage = 0;
+
+    public Pages() {}
 
     public Pages(int fromPage, int toPage) {
         this.fromPage = fromPage;

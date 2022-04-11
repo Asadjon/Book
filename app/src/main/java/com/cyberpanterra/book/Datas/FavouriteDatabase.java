@@ -13,9 +13,9 @@ public class FavouriteDatabase {
         return database != null ? database : (database = new FavouriteDatabase(context));
     }
 
-    private FavouriteDatabase(Context context){ favouriteThemes = new FavouriteThemes(context); }
+    private FavouriteDatabase(Context context){ favouriteThemes = new Favourites(context); }
 
-    private final FavouriteThemes favouriteThemes;
+    private final Favourites favouriteThemes;
 
-    public FavouriteThemes getFavouriteThemes() { return favouriteThemes; }
+    public Favourites getFavouriteThemes() { return favouriteThemes; }
 }

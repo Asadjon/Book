@@ -16,4 +16,10 @@
         <item name="android:textViewStyle">@style/textViewsStyle</item>
         <item name="backgroundColor">@style/backgroundColor</item>
     </style>
+
+    <style name="Theme.Book.Fullscreen" parent="Theme.Book">
+        <item name="android:actionBarStyle">@style/Widget.Theme.Book.ActionBar.Fullscreen</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+    </style>
 </resources>

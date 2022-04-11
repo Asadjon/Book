@@ -13,9 +13,6 @@
         <action
             android:id="@+id/action_navigation_home_to_navigation_dashboard"
             app:destination="@id/navigation_saved" />
-        <action
-            android:id="@+id/action_navigation_menu_to_navigation_open_data"
-            app:destination="@id/navigation_open_data" />
     </fragment>
 
     <fragment
@@ -26,22 +23,6 @@
         <action
             android:id="@+id/action_navigation_favourite_to_navigation_home"
             app:destination="@id/navigation_menu" />
-        <action
-            android:id="@+id/action_navigation_saved_to_navigation_open_data"
-            app:destination="@id/navigation_open_data" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/navigation_open_data"
-        android:name="com.cyberpanterra.book.Fragments.OpenDataFragment"
-        android:label="@string/title_open_data"
-        tools:layout="@layout/fragment_open_data" >
-        <action
-            android:id="@+id/action_navigation_favourite_to_navigation_home"
-            app:destination="@id/navigation_menu" />
-        <action
-            android:id="@+id/action_navigation_open_data_to_navigation_saved"
-            app:destination="@id/navigation_saved" />
     </fragment>
 
 </navigation>
