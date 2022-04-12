@@ -12,4 +12,8 @@ public class SimpleChapter extends Data {
     public SimpleChapter(int id, String name, String value, Pages pages) {
         super(id, name, value, pages);
     }
+
+    public SimpleChapter(SimpleChapter newSimpleChapter) {
+        super(newSimpleChapter);
+    }
 }

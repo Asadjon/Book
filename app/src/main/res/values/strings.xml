@@ -7,7 +7,5 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_delete">Delete</string>
     <string name="title_search">Search</string>
-    <string name="title_activity_view">FullscreenActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_empty">List is empty</string>
 </resources>

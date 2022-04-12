@@ -8,4 +8,5 @@
     <string name="title_notifications" translatable="false">Notifications</string>
     <string name="title_delete" translatable="false">Delete</string>
     <string name="title_search" translatable="false">Search</string>
+    <string name="title_empty">List is empty</string>
 </resources>

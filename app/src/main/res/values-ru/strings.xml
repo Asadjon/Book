@@ -8,4 +8,5 @@
     <string name="title_notifications" translatable="false">Уведомления</string>
     <string name="title_delete" translatable="false">Удалить</string>
     <string name="title_search" translatable="false">Поиск</string>
+    <string name="title_empty" translatable="false">Список пустой</string>
 </resources>

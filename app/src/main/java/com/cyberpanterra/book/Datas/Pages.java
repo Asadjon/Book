@@ -5,8 +5,6 @@ package com.cyberpanterra.book.Datas;
     Created on 18:04, 23.03.2022
 */
 
-import java.util.Objects;
-
 public class Pages{
     public int fromPage = 0;
     public int toPage = 0;
@@ -18,6 +16,13 @@ public class Pages{
         this.toPage = toPage;
     }
 
+    public Pages(Object[] pages) {
+        if(pages != null && pages.length > 1) {
+            if(pages[0] instanceof Integer) this.fromPage = (int) pages[0];
+            if(pages[1] instanceof Integer) this.toPage = (int) pages[1];
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -25,10 +30,5 @@ public class Pages{
         Pages pages = (Pages) o;
         return fromPage == pages.fromPage &&
                 toPage == pages.toPage;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(fromPage, toPage);
     }
 }

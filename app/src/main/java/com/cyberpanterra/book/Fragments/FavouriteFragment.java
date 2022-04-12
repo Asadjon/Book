@@ -36,7 +36,7 @@ import org.jetbrains.annotations.NotNull;
 public class FavouriteFragment extends Fragment implements IOnBackPressed {
 
     private FavouriteViewModel mFavouriteViewModel;
-    private ChaptersDataAdapter mAdapter;
+    private ChaptersDataAdapter adapter;
     private TextView mEmptyText;
     private Action.IRAction<Void, Boolean> onSearchViewCollapse;
 
@@ -46,39 +46,35 @@ public class FavouriteFragment extends Fragment implements IOnBackPressed {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setHasOptionsMenu(true);
 
         mEmptyText = view.findViewById(R.id.emptyText);
 
-        mAdapter = new ChaptersDataAdapter()
+        adapter = new ChaptersDataAdapter()
                 .setOnClickListener(this::OnClick)
                 .setOnActionListener(this::OnRemove);
 
         RecyclerView mRecyclerView = view.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(false);
-        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(adapter);
 
         mFavouriteViewModel = new ViewModelProvider(requireActivity(), provideFavouriteViewModelFactory()).get(FavouriteViewModel.class);
         mFavouriteViewModel.getFavourites().observe(requireActivity(), chapters -> {
-            mAdapter.setChapterList(chapters);
+            adapter.setChapterList(chapters);
             favouriteEmpty(chapters.isEmpty());
         });
     }
 
     public void OnClick(@NotNull Data data) {
         Intent intent = new Intent(requireContext(), ViewActivity.class);
-        int chapterIndex;
 
         if (data.getClass() == Theme.class) {
-            chapterIndex = mAdapter.getFullChapters().indexOf(((Theme) data).getChapter());
-            int themeIndex = ((Theme) data).getChapter().indexOf(((Theme) data));
-            intent.putExtra(ViewActivity.THEME_INDEX, themeIndex);
-        } else {
-            chapterIndex = mAdapter.getFullChapters().indexOf(data);
-            intent.putExtra(ViewActivity.THEME_INDEX, 0);
+            intent.putExtra(ViewActivity.THEME_INDEX, ((Theme) data).getChapter().indexOf(((Theme) data)));
+            data = ((Theme) data).getChapter();
         }
 
         intent.putExtra(ViewActivity.IS_FAVOURITE_VIEWER, true);
-        intent.putExtra(ViewActivity.CHAPTER_INDEX, chapterIndex);
+        intent.putExtra(ViewActivity.CHAPTER_INDEX, adapter.getFullChapters().indexOf(data));
         startActivity(intent);
     }
 
@@ -87,8 +83,11 @@ public class FavouriteFragment extends Fragment implements IOnBackPressed {
         else mFavouriteViewModel.removeChapter((SimpleChapter) data);
     }
 
-    private boolean onSearchViewCollapse() {
-        return onSearchViewCollapse != null ? onSearchViewCollapse.call(null) : true;
+    private boolean searchViewCollapse() {
+        try {
+            return onSearchViewCollapse != null ? onSearchViewCollapse.call(null) : true;
+        } catch (Exception e) { e.printStackTrace(); }
+        return true;
     }
 
     @NotNull
@@ -117,7 +116,7 @@ public class FavouriteFragment extends Fragment implements IOnBackPressed {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                mAdapter.getFilter().filter(newText);
+                adapter.getFilter().filter(newText);
                 return false;
             }
         });
@@ -127,11 +126,9 @@ public class FavouriteFragment extends Fragment implements IOnBackPressed {
 
     private void favouriteEmpty(boolean isEmpty) {
         mEmptyText.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-        if (isEmpty) onSearchViewCollapse();
+        if (isEmpty) searchViewCollapse();
     }
 
     @Override
-    public boolean onBackPressed() {
-        return onSearchViewCollapse();
-    }
+    public boolean onBackPressed() { return searchViewCollapse(); }
 }

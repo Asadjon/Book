@@ -75,7 +75,7 @@ public class MenuFragment extends Fragment implements IOnBackPressed {
                 return true;
             }
         };
-        onSearchViewCollapse();
+        searchViewCollapse();
 
         SearchView mSearchView = (SearchView) menuItem_search.getActionView();
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -94,19 +94,14 @@ public class MenuFragment extends Fragment implements IOnBackPressed {
 
     public void OnClick(@NotNull Data data) {
         Intent intent = new Intent(requireContext(), ViewActivity.class);
-        int chapterIndex;
 
         if (data.getClass() == Theme.class) {
-            chapterIndex = adapter.getFullChapters().indexOf(((Theme) data).getChapter());
-            int themeIndex = ((Theme) data).getChapter().indexOf(((Theme) data));
-            intent.putExtra(ViewActivity.THEME_INDEX, themeIndex);
-        } else {
-            chapterIndex = adapter.getFullChapters().indexOf(data);
-            intent.putExtra(ViewActivity.THEME_INDEX, 0);
+            intent.putExtra(ViewActivity.THEME_INDEX, ((Theme) data).getChapter().indexOf(((Theme) data)));
+            data = ((Theme) data).getChapter();
         }
 
         intent.putExtra(ViewActivity.IS_FAVOURITE_VIEWER, false);
-        intent.putExtra(ViewActivity.CHAPTER_INDEX, chapterIndex);
+        intent.putExtra(ViewActivity.CHAPTER_INDEX, adapter.getFullChapters().indexOf(data));
         startActivity(intent);
     }
 
@@ -116,12 +111,13 @@ public class MenuFragment extends Fragment implements IOnBackPressed {
         adapter.notifyDataSetChanged();
     }
 
-    private boolean onSearchViewCollapse() {
-        return onSearchViewCollapse != null ? onSearchViewCollapse.call(null) : true;
+    private boolean searchViewCollapse() {
+        try {
+            return onSearchViewCollapse != null ? onSearchViewCollapse.call(null) : true;
+        } catch (Exception e) { e.printStackTrace(); }
+        return true;
     }
 
     @Override
-    public boolean onBackPressed() {
-        return onSearchViewCollapse();
-    }
+    public boolean onBackPressed() { return searchViewCollapse(); }
 }

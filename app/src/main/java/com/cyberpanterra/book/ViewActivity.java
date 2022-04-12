@@ -84,7 +84,7 @@ public class ViewActivity extends AppCompatActivity {
                 ChaptersData.getInstance(this, MainActivity.DATABASE_NAME).getChapterList();
 
         SimpleChapter chapter = chapters.get(intent.getIntExtra(CHAPTER_INDEX, 0));
-        if (chapter.getClass() == Chapter.class)
+        if (chapter.getClass() == Chapter.class && intent.hasExtra(THEME_INDEX))
             data = ((Chapter) chapter).get(intent.getIntExtra(THEME_INDEX, 0));
         else data = chapter;
 
@@ -143,15 +143,13 @@ public class ViewActivity extends AppCompatActivity {
 
     private void changeFavourite() {
         isFavourite = !isFavourite;
-        if (isFavourite)
-            if (data.getClass() == SimpleChapter.class)
-                favouriteViewModel.addChapter((SimpleChapter) data);
-            else favouriteViewModel.addTheme((Theme) data);
-
-        else if (data.getClass() == SimpleChapter.class)
+        if (isFavourite) {
+            if (data.getClass() == Theme.class) favouriteViewModel.addTheme((Theme) data);
+            favouriteViewModel.addChapter((SimpleChapter) data);
+        } else {
+            if (data.getClass() == Theme.class) favouriteViewModel.removeTheme((Theme) data);
             favouriteViewModel.removeChapter((SimpleChapter) data);
-        else if (data.getClass() == Theme.class) favouriteViewModel.removeTheme((Theme) data);
-
+        }
     }
 
     @NotNull

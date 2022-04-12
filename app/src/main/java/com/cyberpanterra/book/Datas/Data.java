@@ -7,6 +7,8 @@ package com.cyberpanterra.book.Datas;
 
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -24,6 +26,10 @@ public class Data {
         this.name = name;
         this.value = value;
         this.pages = pages;
+    }
+
+    public Data(Data newData){
+        this(newData.id, newData.name, newData.value, newData.pages);
     }
 
     public int getId() {
@@ -58,7 +64,7 @@ public class Data {
     }
 
     @NotNull
-    public Data clone() { return new Data(getId(), getName(), getValue(), getPages()); }
+    public Data clone() { return new Data(this); }
 
     @Override
     public boolean equals(Object o) {

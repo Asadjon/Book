@@ -11,7 +11,7 @@
         <activity
             android:name=".ViewActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_view"
+            android:label="@string/title_open_data"
             android:theme="@style/Theme.Book.Fullscreen"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"/>

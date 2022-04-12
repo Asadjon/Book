@@ -17,8 +17,12 @@ import android.widget.TextView;
 
 import com.cyberpanterra.book.Interfaces.Action;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class StaticClass {
 
@@ -57,34 +61,67 @@ public class StaticClass {
     }
 
     public static <T> void forEach(List<T> list,  Action.IAction<T> function){
-        for(T t1 : list) function.call(t1);
+        for(T t1 : list) {
+            try { function.call(t1);}
+            catch (Exception e) { e.printStackTrace(); }
+        }
     }
 
     public static <T, T2> List<T2> getListAt(List<T> list, Action.IRAction<T, T2> function){
         List<T2> newList = new ArrayList<>();
-        for(T t1 : list) newList.add(function.call(t1));
+        for(T t1 : list)
+            try { newList.add(function.call(t1)); }
+            catch (Exception e) { e.printStackTrace(); }
         return newList;
     }
 
     public static <T> boolean contains(List<T> list, Action.IRAction<T, Boolean> function){
         for(T t1 : list)
-            if(function.call(t1)) return true;
+            try { if(function.call(t1)) return true; }
+            catch (Exception e) { e.printStackTrace(); }
         return false;
     }
 
     public static <T> List<T> whereAll(List<T> list, Action.IRAction<T, Boolean> function){
         List<T> newList = new ArrayList<>();
-        for(T t1 : list) if(function.call(t1)) newList.add(t1);
+        for(T t1 : list)
+            try { if(function.call(t1)) newList.add(t1); }
+            catch (Exception e) { e.printStackTrace(); }
         return newList;
     }
 
     public static <T> T first(List<T> list, Action.IRAction<T, Boolean> function){
-        for(T t1 : list) if(function.call(t1)) return t1;
+        for(T t1 : list)
+            try { if(function.call(t1)) return t1; }
+            catch (Exception e) { e.printStackTrace(); }
         return null;
     }
 
     public static <T> boolean trueAll(List<T> list, Action.IRAction<T, Boolean> function){
-        for(T t1 : list) if(!function.call(t1)) return false;
+        for(T t1 : list)
+            try { if(!function.call(t1)) return false; }
+            catch (Exception e) { e.printStackTrace(); }
         return true;
+    }
+
+    public static  <T, T2> List<T2> getJsonListAt(JSONArray jsonArray, Action.IRAction<T, T2> action){
+        List<T2> list = new ArrayList<>();
+        if (jsonArray == null || action == null) return list;
+
+        for (int i = 0; i < Objects.requireNonNull(jsonArray).length(); i++)
+            try { list.add(action.call((T) jsonArray.get(i))); }
+            catch (Exception e) { e.printStackTrace(); }
+        return list;
+    }
+
+    public static  <T, T2 extends JSONObject> JSONArray getJsonListAt(List<T> jsonArray, Action.IRAction<T, T2> action){
+        JSONArray list = new JSONArray();
+        if (jsonArray == null || action == null) return list;
+
+        forEach(jsonArray, target -> {
+            try { list.put(action.call(target)); }
+            catch (Exception e) { e.printStackTrace(); }
+        });
+        return list;
     }
 }

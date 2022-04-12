@@ -71,8 +71,7 @@ public class ChaptersDataAdapter extends RecyclerView.Adapter<ViewHolder> implem
         if (list != null) {
             mFullChapters.clear();
             mFullChapters.addAll(list);
-            chapterList = list;
-            notifyDataSetChanged();
+            getFilter().filter(searchedText);
         }
         return this;
     }

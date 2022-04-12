@@ -8,4 +8,5 @@
     <string name="title_notifications">Bildirishnomalar</string>
     <string name="title_delete">Oʻchirish</string>
     <string name="title_search">Qidirmoq</string>
+    <string name="title_empty">Ro‘yxat bo‘sh</string>
 </resources>

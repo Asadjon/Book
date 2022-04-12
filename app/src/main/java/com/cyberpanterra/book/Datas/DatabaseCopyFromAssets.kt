@@ -93,19 +93,20 @@ import java.io.*
     }
 
     open fun getValue(json: JSONObject, key: String): Any? {
-        try {
-            return json.get(key)
+        return try {
+            json.get(key)
         } catch (e: JSONException) {
             e.printStackTrace()
+            json
         }
-        return null
     }
 
-    open fun setValue(json: JSONObject, key: String, value: Any?) {
+    open fun setValue(json: JSONObject, key: String, value: Any?): DatabaseCopyFromAssets? {
         try {
             json.put(key, value)
         } catch (e: JSONException) {
             e.printStackTrace()
         }
+        return this
     }
 }

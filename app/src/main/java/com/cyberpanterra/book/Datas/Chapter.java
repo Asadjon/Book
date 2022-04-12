@@ -22,6 +22,10 @@ public class Chapter extends SimpleChapter {
         setName(name).setValue(value);
     }
 
+    public Chapter(Chapter newChapter) {
+        super(newChapter);
+    }
+
     public boolean isEmpty() { return themeList.isEmpty(); }
 
     public int size() { return themeList.size(); }

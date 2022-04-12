@@ -4,88 +4,55 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.cyberpanterra.book.Interactions.StaticClass
 import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
-import java.util.*
 
 /* 
-    The creator of the ChaptersData class is Asadjon Xusanjonov
+    The creator of the FavouriteDatabaseController class is Asadjon Xusanjonov
     Created on 14:27, 23.03.2022
-*/   class FavouriteDatabaseController(context: Context, mFileName: String) : DatabaseCopyFromAssets(context, mFileName) {
+*/
+
+class FavouriteDatabaseController(context: Context, mFileName: String) : DatabaseCopyFromAssets(context, mFileName) {
 
     var chapterList: MutableList<SimpleChapter>
         get() {
-            val chaptersJson = getValue(mainJsonObject, "Contents") as JSONArray?
-            val chapters: MutableList<SimpleChapter> = ArrayList()
-            try {
-                for (i in 0 until chaptersJson!!.length()) {
-                    val chapterJson = chaptersJson.getJSONObject(i)
-                    val chapterPageJson = getValue(chapterJson, "Pages") as JSONArray?
-                    val pages = Pages(chapterPageJson!!.getInt(0), chapterPageJson.getInt(1))
+            return StaticClass.getJsonListAt(getValue(mainJsonObject, "Contents") as JSONArray) { chapterJson: JSONObject ->
+                val chapter = Chapter(getValue(chapterJson, "Chapter") as Int,
+                        getValue(chapterJson, "Name") as String?,
+                        getValue(chapterJson, "Value") as String?,
+                        Pages(StaticClass.getJsonListAt(getValue(chapterJson, "Pages") as JSONArray) { target: Int? -> target }.toTypedArray()))
 
-                    chapters.add(if (chapterJson.has("Themes")) {
-                        val themesJson = getValue(chapterJson, "Themes") as JSONArray?
-                        val themes: MutableList<Theme> = ArrayList()
-                        for (j in 0 until themesJson!!.length()) {
-                            val themeJson = themesJson.getJSONObject(j)
-                            val pageJson = getValue(themeJson, "Pages") as JSONArray?
-                            themes.add(Theme(
-                                    getValue(themeJson, "Id") as Int,
-                                    getValue(themeJson, "Index") as String?,
-                                    getValue(themeJson, "Name") as String?,
-                                    Pages(pageJson!!.getInt(0), pageJson.getInt(1))))
-                        }
-                        Chapter(getValue(chapterJson, "Chapter") as Int,
-                                getValue(chapterJson, "Name") as String?,
-                                getValue(chapterJson, "Value") as String?,
-                                pages).set(themes)
-
-                    } else {
-                        SimpleChapter(
-                                getValue(chapterJson, "Chapter") as Int,
-                                getValue(chapterJson, "Name") as String?,
-                                getValue(chapterJson, "Value") as String?,
-                                pages)
-
+                if (chapterJson.has("Themes"))
+                    Chapter(chapter).set(StaticClass.getJsonListAt(getValue(chapterJson, "Themes") as JSONArray) { themeJson: JSONObject ->
+                        Theme(getValue(themeJson, "Id") as Int,
+                                getValue(themeJson, "Index") as String?,
+                                getValue(themeJson, "Name") as String?,
+                                Pages(StaticClass.getJsonListAt<Int, Int>(getValue(themeJson, "Pages") as JSONArray) { target: Int? -> target }.toTypedArray()))
                     })
-                }
-            } catch (e: JSONException) {
-                e.printStackTrace()
+                else SimpleChapter(chapter)
             }
-            return chapters
         }
         set(chapters) {
-            val chaptersJson = JSONArray()
-            for (chapter in chapters) {
+            val mainJson = JSONObject().put("Contents", StaticClass.getJsonListAt(chapters){ chapter ->
                 val chapterJson = JSONObject()
-                setValue(chapterJson, "Chapter", chapter.id)
-                setValue(chapterJson, "Name", chapter.name)
-                setValue(chapterJson, "Value", chapter.value)
-                setValue(chapterJson, "Pages", JSONArray().put(chapter.pages.fromPage).put(chapter.pages.toPage))
+                        .put("Chapter", chapter.id)
+                        .put("Name", chapter.name)
+                        .put("Value", chapter.value)
+                        .put("Pages", JSONArray().put(chapter.pages.fromPage).put(chapter.pages.toPage))
 
                 if (chapter.javaClass == Chapter::class.java) {
-                    val themesJson = JSONArray()
-                    StaticClass.forEach((chapter as Chapter).themeList) {
-                        val themeJson = JSONObject()
-                        setValue(themeJson, "Id", it.id)
-                        setValue(themeJson, "Index", it.name)
-                        setValue(themeJson, "Name", it.value)
-                        setValue(themeJson, "Pages", JSONArray().put(it.pages.fromPage).put(it.pages.toPage))
-                        themesJson.put(themeJson)
-                    }
-                    setValue(chapterJson, "Themes", themesJson)
+                    chapterJson.put("Themes", StaticClass.getJsonListAt((chapter as Chapter).themeList){
+                        JSONObject()
+                                .put("Id", it.id)
+                                .put("Index", it.name)
+                                .put("Name", it.value)
+                                .put("Pages", JSONArray().put(it.pages.fromPage).put(it.pages.toPage))
+                    })
                 }
-                chaptersJson.put(chapterJson)
-            }
-            try {
-                val mainJson = JSONObject()
-                setValue(mainJson, "Contents", chaptersJson)
-                mainJsonObject = mainJson
-                deleteFile()
-                saveJsonObject()
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
+                chapterJson
+            })
+            deleteFile()
+            saveJsonObject()
+            mainJsonObject = mainJson
         }
 
     companion object {
