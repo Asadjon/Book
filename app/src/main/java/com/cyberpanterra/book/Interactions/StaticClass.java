@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
-import com.cyberpanterra.book.Interfaces.Action;
+import Interfaces.Action;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -26,7 +26,7 @@ import java.util.Objects;
 
 public class StaticClass {
 
-    public static void setHighLightedText(TextView tv, String textToHighlight) {
+    public static Spannable setHighLightedText(TextView tv, String textToHighlight) {
         tv.setText(tv.getText().toString());
         String tvt = tv.getText().toString().toUpperCase().trim();
         Spannable wordToSpan = new SpannableString(tv.getText());
@@ -42,6 +42,21 @@ public class StaticClass {
                 tv.setText(wordToSpan, TextView.BufferType.SPANNABLE);
             }
         }
+        return wordToSpan;
+    }
+
+    public static Spannable setHighLightedText(String text, String textToHighlight) {
+        String tvt = text.toUpperCase().trim();
+        Spannable wordToSpan = new SpannableString(text);
+
+        int ofe = tvt.indexOf(textToHighlight);
+
+        for (int ofs = 0; ofs < tvt.length() && ofe != -1; ofs = ofe + 1) {
+            ofe = tvt.indexOf(textToHighlight, ofs);
+            if (ofe == -1) break;
+            else  wordToSpan.setSpan(new BackgroundColorSpan(0xFFFFFF00), ofe, ofe + textToHighlight.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        return wordToSpan;
     }
 
     public static boolean keyboardShown(View rootView) {

@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.cyberpanterra.book.Datas.Theme;
+import Datas.Theme;
 
 public class SharedViewModel extends ViewModel {
 

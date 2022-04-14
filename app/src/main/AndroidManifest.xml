@@ -9,19 +9,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Book">
         <activity
-            android:name=".ViewActivity"
+            android:name="com.cyberpanterra.book.Activities.ViewActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_open_data"
             android:theme="@style/Theme.Book.Fullscreen"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"/>
+            android:parentActivityName="com.cyberpanterra.book.Activities.MainActivity"
+            android:screenOrientation="fullSensor"/>
         <activity
-            android:name=".AuthorActivity"
+            android:name="com.cyberpanterra.book.Activities.AuthorActivity"
             android:label="@string/activity_author_name"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MainActivity"
+            android:screenOrientation="fullSensor"/>
+        <activity android:name="com.cyberpanterra.book.Activities.MainActivity"
+            android:exported="true"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,35 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/theme_color"
-    android:orientation="horizontal">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView
-        android:id="@+id/nameText"
-        android:layout_width="wrap_content"
+    <data class=".databinding.ItemThemeBinding">
+        <import type="android.view.View"/>
+        <import type="android.widget.TextView"/>
+        <variable
+            name="theme"
+            type="Datas.Theme" />
+        <variable
+            name="click"
+            type="Interfaces.OnClickListener" />
+        <variable
+            name="searchText"
+            type="String" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:padding="5dp"
-        android:text="1.1"
-        android:textColor="@color/black"
-        android:textSize="14sp"
-        android:textStyle="bold" />
+        android:background="@color/theme_color"
+        android:onClick="@{() -> click.onClick(theme)}"
+        android:orientation="horizontal">
 
-    <View
-        android:id="@+id/separatorView"
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:background="@color/black" />
+        <TextView
+            android:id="@+id/nameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@{theme.getSpannableName(searchText)}"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/valueText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:padding="5dp"
-        android:text="Предметы, задачи и общие принципы дошкольной педагогики"
-        android:textColor="@color/black"
-        android:textSize="14sp"
-        android:textStyle="italic" />
-</LinearLayout>
+        <View
+            android:id="@+id/separatorView"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/black"
+            android:visibility="@{theme.name.empty || theme.value.empty ? View.GONE : View.VISIBLE}" />
+
+        <TextView
+            android:id="@+id/valueText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@{theme.getSpannableValue(searchText)}"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="italic" />
+    </LinearLayout>
+</layout>

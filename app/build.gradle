@@ -7,12 +7,19 @@ android {
     compileSdkVersion 31
     buildToolsVersion "30.0.3"
 
+    buildFeatures{
+        //noinspection DataBindingWithoutKapt
+        dataBinding true // for data binding
+        viewBinding true
+    }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        main.java.srcDirs += 'src/main/com/cyberpanterra/book/Datas'
     }
 
     defaultConfig {
-        applicationId "com.cyberpanterra.book"
+        applicationId 'com.cyberpanterra.book'
         minSdkVersion 16
         targetSdkVersion 31
         versionCode 1

@@ -8,7 +8,7 @@ package com.cyberpanterra.book.UI;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.cyberpanterra.book.Datas.FavouriteRepository;
+import Datas.FavouriteRepository;
 
 import org.jetbrains.annotations.NotNull;
 

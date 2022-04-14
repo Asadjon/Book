@@ -9,7 +9,7 @@
         android:id="@+id/navigation_menu"
         android:name="com.cyberpanterra.book.Fragments.MenuFragment"
         android:label="@string/title_menu"
-        tools:layout="@layout/fragment_menu" >
+        tools:layout="@layout/fragment_main" >
         <action
             android:id="@+id/action_navigation_home_to_navigation_dashboard"
             app:destination="@id/navigation_saved" />
@@ -19,7 +19,7 @@
         android:id="@+id/navigation_saved"
         android:name="com.cyberpanterra.book.Fragments.FavouriteFragment"
         android:label="@string/title_favourite"
-        tools:layout="@layout/fragment_favourite" >
+        tools:layout="@layout/fragment_main" >
         <action
             android:id="@+id/action_navigation_favourite_to_navigation_home"
             app:destination="@id/navigation_menu" />

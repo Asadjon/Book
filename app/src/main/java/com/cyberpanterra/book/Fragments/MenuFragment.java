@@ -1,11 +1,9 @@
 package com.cyberpanterra.book.Fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,22 +11,16 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.cyberpanterra.book.Adapters.ChaptersDataAdapter;
-import com.cyberpanterra.book.Datas.ChaptersData;
-import com.cyberpanterra.book.Datas.Data;
-import com.cyberpanterra.book.Datas.FavouriteDatabase;
-import com.cyberpanterra.book.Datas.FavouriteRepository;
-import com.cyberpanterra.book.Datas.SimpleChapter;
-import com.cyberpanterra.book.Datas.Theme;
-import com.cyberpanterra.book.Interfaces.Action;
-import com.cyberpanterra.book.Interfaces.IOnBackPressed;
-import com.cyberpanterra.book.MainActivity;
+import Adapters.ChaptersDataAdapter;
+import Datas.*;
+import Interfaces.*;
+import com.cyberpanterra.book.Activities.MainActivity;
 import com.cyberpanterra.book.R;
 import com.cyberpanterra.book.UI.FavouriteViewModel;
 import com.cyberpanterra.book.UI.FavouriteViewModelFactory;
-import com.cyberpanterra.book.ViewActivity;
+import com.cyberpanterra.book.Activities.ViewActivity;
+import com.cyberpanterra.book.databinding.FragmentMainBinding;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -36,25 +28,27 @@ import org.jetbrains.annotations.NotNull;
 public class MenuFragment extends Fragment implements IOnBackPressed {
 
     private FavouriteViewModel favouriteViewModel;
-    private ChaptersDataAdapter adapter;
+    private FragmentMainBinding binding;
     private Action.IRAction<Void, Boolean> onSearchViewCollapse;
 
-    public MenuFragment() { super(R.layout.fragment_menu); }
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentMainBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
 
-        RecyclerView mRecyclerView = view.findViewById(R.id.recyclerView);
-        mRecyclerView.setHasFixedSize(true);
-        adapter = new ChaptersDataAdapter()
+        binding.setAdapter(new ChaptersDataAdapter()
                 .setChapterList(ChaptersData.getInstance(requireContext(), MainActivity.DATABASE_NAME).getChapterList())
                 .setOnClickListener(this::OnClick)
-                .setOnActionListener(this::onFavorite);
-        mRecyclerView.setAdapter(adapter);
+                .setOnActionListener(this::onFavorite));
 
-        favouriteViewModel = new ViewModelProvider(requireActivity(), provideFavouriteViewModelFactory()).get(FavouriteViewModel.class);
+        favouriteViewModel = new ViewModelProvider(requireActivity(), (ViewModelProvider.Factory) provideFavouriteViewModelFactory()).get(FavouriteViewModel.class);
     }
 
     @NotNull
@@ -84,7 +78,7 @@ public class MenuFragment extends Fragment implements IOnBackPressed {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.getFilter().filter(newText);
+                binding.getAdapter().getFilter().filter(newText);
                 return false;
             }
         });
@@ -101,14 +95,14 @@ public class MenuFragment extends Fragment implements IOnBackPressed {
         }
 
         intent.putExtra(ViewActivity.IS_FAVOURITE_VIEWER, false);
-        intent.putExtra(ViewActivity.CHAPTER_INDEX, adapter.getFullChapters().indexOf(data));
+        intent.putExtra(ViewActivity.CHAPTER_INDEX, binding.getAdapter().getFullChapters().indexOf(data));
         startActivity(intent);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void onFavorite(@NotNull Data data) {
-        if (data instanceof Theme) favouriteViewModel.addTheme((Theme) data);
-        else favouriteViewModel.addChapter((SimpleChapter) data);
-        adapter.notifyDataSetChanged();
+        favouriteViewModel.addData(data);
+        binding.getAdapter().notifyDataSetChanged();
     }
 
     private boolean searchViewCollapse() {

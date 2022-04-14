@@ -3,11 +3,12 @@ package com.cyberpanterra.book.Fragments;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,20 +16,19 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.cyberpanterra.book.Adapters.ChaptersDataAdapter;
-import com.cyberpanterra.book.Datas.Data;
-import com.cyberpanterra.book.Datas.FavouriteDatabase;
-import com.cyberpanterra.book.Datas.FavouriteRepository;
-import com.cyberpanterra.book.Datas.SimpleChapter;
-import com.cyberpanterra.book.Datas.Theme;
-import com.cyberpanterra.book.Interfaces.Action;
-import com.cyberpanterra.book.Interfaces.IOnBackPressed;
+import Adapters.ChaptersDataAdapter;
+import Datas.Data;
+import Datas.FavouriteDatabase;
+import Datas.FavouriteRepository;
+import Datas.Theme;
+import Interfaces.Action;
+import Interfaces.IOnBackPressed;
 import com.cyberpanterra.book.R;
 import com.cyberpanterra.book.UI.FavouriteViewModel;
 import com.cyberpanterra.book.UI.FavouriteViewModelFactory;
-import com.cyberpanterra.book.ViewActivity;
+import com.cyberpanterra.book.Activities.ViewActivity;
+import com.cyberpanterra.book.databinding.FragmentMainBinding;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -36,33 +36,27 @@ import org.jetbrains.annotations.NotNull;
 public class FavouriteFragment extends Fragment implements IOnBackPressed {
 
     private FavouriteViewModel mFavouriteViewModel;
-    private ChaptersDataAdapter adapter;
-    private TextView mEmptyText;
+    private FragmentMainBinding binding;
     private Action.IRAction<Void, Boolean> onSearchViewCollapse;
 
-    public FavouriteFragment() { super(R.layout.fragment_favourite); }
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentMainBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
-
-        mEmptyText = view.findViewById(R.id.emptyText);
-
-        adapter = new ChaptersDataAdapter()
+        binding.setAdapter(new ChaptersDataAdapter()
                 .setOnClickListener(this::OnClick)
-                .setOnActionListener(this::OnRemove);
+                .setOnActionListener(this::OnRemove));
 
-        RecyclerView mRecyclerView = view.findViewById(R.id.recyclerView);
-        mRecyclerView.setHasFixedSize(false);
-        mRecyclerView.setAdapter(adapter);
-
-        mFavouriteViewModel = new ViewModelProvider(requireActivity(), provideFavouriteViewModelFactory()).get(FavouriteViewModel.class);
-        mFavouriteViewModel.getFavourites().observe(requireActivity(), chapters -> {
-            adapter.setChapterList(chapters);
-            favouriteEmpty(chapters.isEmpty());
-        });
+        mFavouriteViewModel = new ViewModelProvider(requireActivity(), (ViewModelProvider.Factory) provideFavouriteViewModelFactory()).get(FavouriteViewModel.class);
+        mFavouriteViewModel.getFavourites().observe(requireActivity(), chapters -> binding.getAdapter().setChapterList(chapters));
     }
 
     public void OnClick(@NotNull Data data) {
@@ -74,13 +68,12 @@ public class FavouriteFragment extends Fragment implements IOnBackPressed {
         }
 
         intent.putExtra(ViewActivity.IS_FAVOURITE_VIEWER, true);
-        intent.putExtra(ViewActivity.CHAPTER_INDEX, adapter.getFullChapters().indexOf(data));
+        intent.putExtra(ViewActivity.CHAPTER_INDEX, binding.getAdapter().getFullChapters().indexOf(data));
         startActivity(intent);
     }
 
     public void OnRemove(@NotNull Data data) {
-        if (data instanceof Theme) mFavouriteViewModel.removeTheme((Theme) data);
-        else mFavouriteViewModel.removeChapter((SimpleChapter) data);
+        mFavouriteViewModel.removeData(data);
     }
 
     private boolean searchViewCollapse() {
@@ -116,17 +109,12 @@ public class FavouriteFragment extends Fragment implements IOnBackPressed {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.getFilter().filter(newText);
+                binding.getAdapter().getFilter().filter(newText);
                 return false;
             }
         });
 
         super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    private void favouriteEmpty(boolean isEmpty) {
-        mEmptyText.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-        if (isEmpty) searchViewCollapse();
     }
 
     @Override

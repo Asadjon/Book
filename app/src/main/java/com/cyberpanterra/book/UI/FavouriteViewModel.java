@@ -8,11 +8,8 @@ package com.cyberpanterra.book.UI;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.cyberpanterra.book.Datas.Chapter;
-import com.cyberpanterra.book.Datas.Data;
-import com.cyberpanterra.book.Datas.SimpleChapter;
-import com.cyberpanterra.book.Datas.Theme;
-import com.cyberpanterra.book.Datas.FavouriteRepository;
+import Datas.Data;
+import Datas.FavouriteRepository;
 
 import java.util.List;
 
@@ -24,15 +21,11 @@ public class FavouriteViewModel extends ViewModel {
         this.favouriteRepository = favouriteRepository;
     }
 
-    public LiveData<List<SimpleChapter>> getFavourites() { return favouriteRepository.getFavourites(); }
+    public LiveData<List<Data>> getFavourites() { return favouriteRepository.getFavourites(); }
 
-    public void addChapter(SimpleChapter chapter) { favouriteRepository.addChapter(chapter); }
+    public void addData(Data data) { favouriteRepository.addData(data); }
 
-    public void addTheme(Theme theme) { favouriteRepository.addTheme(theme); }
-
-    public void removeTheme(Theme theme) { favouriteRepository.removeTheme(theme); }
-
-    public void removeChapter(SimpleChapter chapter) { favouriteRepository.removeChapter(chapter); }
+    public void removeData(Data data) { favouriteRepository.removeData(data); }
 
     public boolean isContainsFavourite(Data data) { return favouriteRepository.isContains(data); }
 }

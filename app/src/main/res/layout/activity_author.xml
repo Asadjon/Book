@@ -1,167 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".AuthorActivity">
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/imageOfCard"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="30dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintWidth_percent="0.267"
-        app:layout_constraintHeight_percent=".2"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="7dp">
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:srcCompat="@drawable/autor"
-            android:scaleType="fitCenter"/>
-    </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:layout_constraintTop_toBottomOf="@id/imageOfCard"
-        android:text="Умнов Дмитрий Геннадьевич"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:gravity="center"/>
+    android:layout_height="wrap_content"
+    tools:context=".Activities.AuthorActivity">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        app:layout_constraintTop_toBottomOf="@id/name">
+        tools:ignore="UselessParent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/laborActivity"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="ТРУДОВАЯ ДЕЯТЕЛЬНОСТЬ"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:gravity="center"/>
+                android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/laborActivity"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/imageOfCard"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="30dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="7dp"
+                    app:layout_constraintHeight_percent=".25"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.26">
 
-                <TextView
-                    android:text="2011-2015 гг."
-                    style="@style/years_textview"/>
-
-                <TextView
-                    android:text="Студент Андижанского государственного университета"
-                    style="@style/title_textview"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/laborActivity"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="fitCenter"
+                        app:srcCompat="@drawable/author" />
+                </androidx.cardview.widget.CardView>
 
                 <TextView
-                    android:text="2015-2016 гг."
-                    style="@style/years_textview"/>
+                    android:id="@+id/name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="Умнов Дмитрий Геннадьевич"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toBottomOf="@id/imageOfCard" />
 
-                <TextView
-                    android:text="Психолог школы №-4 города Андижан"
-                    style="@style/title_textview"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@id/name">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="ТРУДОВАЯ ДЕЯТЕЛЬНОСТЬ"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/laborActivity"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
 
-                <TextView
-                    android:text="2017-г.            "
-                    style="@style/years_textview"/>
+                        <TextView
+                            style="@style/years_textview"
+                            android:text="2011-2015 гг." />
 
-                <TextView
-                    android:text="Психолог школы №-4 города Андижан"
-                    style="@style/title_textview"/>
+                        <TextView
+                            style="@style/title_textview"
+                            android:text="Студент Андижанского государственного университета" />
 
-            </LinearLayout>
+                    </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/laborActivity"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
 
-                <TextView
-                    android:text="2017-2019 гг."
-                    style="@style/years_textview"/>
+                        <TextView
+                            style="@style/years_textview"
+                            android:text="2015-2016 гг." />
 
-                <TextView
-                    android:text="Преподаватель ассистент кафедры Педагогика Андижанского государственного  университета"
-                    style="@style/title_textview"/>
+                        <TextView
+                            style="@style/title_textview"
+                            android:text="Психолог школы №-4 города Андижан" />
 
-            </LinearLayout>
+                    </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/laborActivity"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
 
-                <TextView
-                    android:text="2019-2020 гг."
-                    style="@style/years_textview"/>
+                        <TextView
+                            style="@style/years_textview"
+                            android:text="2017-г.            " />
 
-                <TextView
-                    android:text="Преподаватель кафедры Дошкольная педагогика Андижанского государственного университета"
-                    style="@style/title_textview" />
+                        <TextView
+                            style="@style/title_textview"
+                            android:text="Магистрант Андижанского государственного университета (Педагогика психология)" />
 
-            </LinearLayout>
+                    </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/laborActivity"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
 
-                <TextView
-                    android:text="2020-2021 гг."
-                    style="@style/years_textview" />
+                        <TextView
+                            style="@style/years_textview"
+                            android:text="2017-2019 гг." />
 
-                <TextView
-                    android:text="Докторант 1-курса Андижанского государственного университета"
-                    style="@style/title_textview" />
+                        <TextView
+                            style="@style/title_textview"
+                            android:text="Преподаватель ассистент кафедры Педагогика Андижанского государственного  университета" />
 
-            </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/years_textview"
+                            android:text="2019-2020 гг." />
+
+                        <TextView
+                            style="@style/title_textview"
+                            android:text="Преподаватель кафедры Дошкольная педагогика Андижанского государственного университета" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/years_textview"
+                            android:text="2020-2021 гг." />
+
+                        <TextView
+                            style="@style/title_textview"
+                            android:text="Докторант 1-курса Андижанского государственного университета" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
     </ScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
